@@ -1,4 +1,4 @@
 package ru.yandex.practicum.filmorate.exceptions;
 
-public class NoSuchUser extends Exception {
+public class NoSuchUser extends RuntimeException {
 }

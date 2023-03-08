@@ -1,22 +1,25 @@
 package ru.yandex.practicum.filmorate.model;
 
 import lombok.Data;
-import java.time.LocalDate;
-import org.springframework.boot.validation.*;
-
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.PastOrPresent;
+import javax.validation.constraints.Pattern;
+import java.time.LocalDate;
 
 @Data
 public class User {
 
     private static int idCounter = 0;
     private int id;
-    @NotBlank
+    @NotEmpty
+    @Pattern(regexp = "\\S+")
     private String login;
     private String name;
     @Email
+    @NotEmpty
     private String email;
+    @PastOrPresent
     private LocalDate birthday;
 
     public User(int id, String login, String name, String email, LocalDate birthday) {
@@ -29,14 +32,5 @@ public class User {
         }
         this.email = email;
         this.birthday = birthday;
-    }
-
-    public boolean validate() {
-        if (email == null || email.isEmpty() || !email.contains("@") ||
-                login == null || login.isEmpty() || login.contains(" ") ||
-                birthday.isAfter(LocalDate.now())) {
-            return false;
-        }
-        return true;
     }
 }
