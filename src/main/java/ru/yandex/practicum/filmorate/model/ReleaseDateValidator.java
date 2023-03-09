@@ -8,9 +8,6 @@ import java.time.Month;
 public class ReleaseDateValidator implements ConstraintValidator<ReleaseDate, LocalDate> {
     @Override
     public boolean isValid(LocalDate value, ConstraintValidatorContext context) {
-        if (value.isBefore(LocalDate.of(1895, Month.DECEMBER, 28))) {
-            return false;
-        }
-        return true;
+        return !value.isBefore(LocalDate.of(1895, Month.DECEMBER, 28));
     }
 }
