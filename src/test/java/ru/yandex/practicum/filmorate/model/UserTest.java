@@ -22,7 +22,6 @@ class UserTest {
     @Test
     void validateCorrectUser() {
         User user = User.builder()
-                .id(1)
                 .email("test@test.test")
                 .login("login")
                 .name("name")
@@ -36,7 +35,6 @@ class UserTest {
     @Test
     void validateWrongEmail() {
         User user = User.builder()
-                .id(1)
                 .email("@test.test")
                 .login("login")
                 .name("name")
@@ -50,7 +48,6 @@ class UserTest {
     @Test
     void validateWrongLogin() {
         User user = User.builder()
-                .id(1)
                 .email("test@test.test")
                 .login("")
                 .name("name")
@@ -64,7 +61,6 @@ class UserTest {
     @Test
     void validateWrongBirthday() {
         User user = User.builder()
-                .id(1)
                 .email("test@test.test")
                 .login("login")
                 .name("name")

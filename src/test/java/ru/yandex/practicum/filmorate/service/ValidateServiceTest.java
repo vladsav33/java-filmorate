@@ -17,7 +17,6 @@ class ValidateServiceTest {
     @Test
     void validateUserNameCompletion() {
         User user = User.builder()
-                .id(1)
                 .email("test@test.test")
                 .login("login")
                 .name("")
@@ -32,7 +31,6 @@ class ValidateServiceTest {
     @Test
     void validateFilmWrongReleaseDate() {
         Film film = Film.builder()
-                .id(1)
                 .name("name")
                 .description("description")
                 .releaseDate(LocalDate.of(1800, 1, 1))

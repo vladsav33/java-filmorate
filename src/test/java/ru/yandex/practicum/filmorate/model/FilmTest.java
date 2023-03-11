@@ -23,7 +23,6 @@ class FilmTest {
     @Test
     void validateCorrectFilm() {
         Film film = Film.builder()
-                .id(1)
                 .name("name")
                 .description("description")
                 .releaseDate(LocalDate.of(2000, 1, 1))
@@ -37,7 +36,6 @@ class FilmTest {
     @Test
     void validateWrongName() {
         Film film = Film.builder()
-                .id(1)
                 .name("")
                 .description("description")
                 .releaseDate(LocalDate.of(2000, 1, 1))
@@ -51,7 +49,6 @@ class FilmTest {
     @Test
     void validateWrongDescription() {
         Film film = Film.builder()
-                .id(1)
                 .name("name")
                 .description("desc".repeat(100))
                 .releaseDate(LocalDate.of(2000, 1, 1))
@@ -65,7 +62,6 @@ class FilmTest {
     @Test
     void validateWrongDuration() {
         Film film = Film.builder()
-                .id(1)
                 .name("name")
                 .description("description")
                 .releaseDate(LocalDate.of(2000, 1, 1))
