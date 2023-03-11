@@ -26,7 +26,7 @@ public class UserController {
     @GetMapping
     public Collection<User> findAll() {
         log.info("Вывести всех пользователей");
-        return userRepository.getUsers();
+        return userRepository.get();
     }
 
     @PostMapping
@@ -35,7 +35,7 @@ public class UserController {
         log.info("Создаем пользователя: {}", user);
         generateCustomValidateException(user, bindingResult);
         validateService.validateUser(user);
-        return userRepository.createUser(user);
+        return userRepository.create(user);
     }
 
     @PutMapping
@@ -43,7 +43,7 @@ public class UserController {
         log.info("Обновляем пользователя: {}", user);
         generateCustomValidateException(user, bindingResult);
         validateService.validateUser(user);
-        User updatedUser = userRepository.updateUser(user);
+        User updatedUser = userRepository.update(user);
         if (updatedUser == null) {
             log.warn("Пользователь с таким ID отсутствует: {}", user);
             throw new HttpMethodException("Пользователь с таким ID отсутствует. Используйте метод POST");

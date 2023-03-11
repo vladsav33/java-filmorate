@@ -26,7 +26,7 @@ public class FilmController {
     @GetMapping
     public Collection<Film> findAll() {
         log.info("Вывести все фильмы");
-        return filmRepository.getFilms();
+        return filmRepository.get();
     }
 
     @PostMapping
@@ -35,7 +35,7 @@ public class FilmController {
         log.info("Создаем фильм: {}", film);
         generateCustomValidateException(film, bindingResult);
         validateService.validateFilm(film);
-        Film createdFilm = filmRepository.createFilm(film);
+        Film createdFilm = filmRepository.create(film);
         return createdFilm;
     }
 
@@ -44,7 +44,7 @@ public class FilmController {
         log.info("Обновляем фильм: {}", film);
         generateCustomValidateException(film, bindingResult);
         validateService.validateFilm(film);
-        Film updatedFilm = filmRepository.updateFilm(film);
+        Film updatedFilm = filmRepository.update(film);
         if (updatedFilm == null) {
             log.warn("Фильм с таким ID отсутствует: {}", film);
             throw new HttpMethodException("Фильм с таким ID отсутствует. Используйте метод POST");
@@ -52,7 +52,7 @@ public class FilmController {
         return updatedFilm;
     }
 
-    private void generateCustomValidateException (Film film, BindingResult bindingResult) {
+    private void generateCustomValidateException(Film film, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             log.warn("Ошибка в заполнении поля {} - {}. Фильм - {}", bindingResult.getFieldError().getField(),
                     bindingResult.getFieldError().getDefaultMessage(), film);
