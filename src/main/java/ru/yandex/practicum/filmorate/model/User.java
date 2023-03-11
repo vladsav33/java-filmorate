@@ -10,13 +10,12 @@ import java.time.LocalDate;
 
 @Data
 @Builder
-public class User {
+public class User extends BaseModel {
     //целочисленный идентификатор — id;
     //электронная почта — email;
     //логин пользователя — login;
     //имя для отображения — name;
     //дата рождения — birthday.
-    private int id;
     @Email
     private String email;
     @NotBlank

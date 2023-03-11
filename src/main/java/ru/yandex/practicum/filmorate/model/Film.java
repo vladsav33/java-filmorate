@@ -10,13 +10,12 @@ import java.time.LocalDate;
 
 @Data
 @Builder
-public class Film {
+public class Film extends BaseModel {
     //целочисленный идентификатор — id;
     //название — name;
     //описание — description;
     //дата релиза — releaseDate;
     //продолжительность фильма — duration.
-    private int id;
     @NotBlank
     private String name;
     @Size(max = 200, message = "Не более 200 знаков")
