@@ -6,6 +6,8 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.PastOrPresent;
 import javax.validation.constraints.Pattern;
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 public class User {
@@ -21,16 +23,20 @@ public class User {
     private String email;
     @PastOrPresent
     private LocalDate birthday;
+    private final Set<Integer> friends;
 
-    public User(int id, String login, String name, String email, LocalDate birthday) {
-        this.id = id;
+    public User(String login, String name, String email, LocalDate birthday) {
         this.login = login;
-        if (name == null) {
+        if (name == null || name.isEmpty()) {
             this.name = login;
         } else {
             this.name = name;
         }
         this.email = email;
         this.birthday = birthday;
+        this.friends = new HashSet<>();
     }
+
 }
+
+

@@ -1,8 +1,14 @@
 package ru.yandex.practicum.filmorate;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.storage.FilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
@@ -14,6 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FilmTest {
     private static Validator validator;
+    public FilmStorage filmStorage;
+    public UserStorage userStorage;
 
     @BeforeAll
     public static void setUpFactory() {
@@ -21,22 +29,28 @@ public class FilmTest {
         validator = factory.getValidator();
     }
 
+    @BeforeEach
+    public void setUpStorage() {
+        filmStorage = new InMemoryFilmStorage();
+        userStorage = new InMemoryUserStorage();
+    }
+
     @Test
-    public void FilmAddRightDetails() {
+    public void addFilmRightDetails() {
         Film film = new Film(0, "Avatar", "Blockbuster", LocalDate.parse("2023-01-01"), 200);
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertTrue(violations.isEmpty());
     }
 
     @Test
-    public void FilmAddEmptyName() {
+    public void addFilmEmptyName() {
         Film film = new Film(0, null, "Blockbuster", LocalDate.parse("2023-01-01"), 200);
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty());
     }
 
     @Test
-    public void FilmAddOldReleaseDate() {
+    public void addFilmOldReleaseDate() {
         Film film = new Film(0, "Avatar", "Blockbuster" + "*".repeat(200),
                 LocalDate.parse("1850-01-01"), 200);
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
@@ -44,25 +58,50 @@ public class FilmTest {
     }
 
     @Test
-    public void FilmAddNegativeDuration() {
+    public void addFilmNegativeDuration() {
         Film film = new Film(0, "Avatar", "Blockbuster", LocalDate.parse("2023-01-01"), -200);
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty());
     }
 
     @Test
-    public void FilmAddZeroDuration() {
+    public void addFilmZeroDuration() {
         Film film = new Film(0, "Avatar", "Blockbuster", LocalDate.parse("2023-01-01"), 0);
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty());
     }
 
     @Test
-    public void FilmAddLongDescription() {
+    public void addFilmLongDescription() {
         Film film = new Film(0, "Avatar", "Blockbuster" + "*".repeat(200),
                 LocalDate.parse("2023-01-01"), 200);
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty());
+    }
+
+    @Test
+    public void likeFilm() {
+        Film film = new Film(0, "Avatar", "Blockbuster" + "*".repeat(200),
+                LocalDate.parse("2023-01-01"), 200);
+        User user = new User("john", null, "john.doe@hotmail.com",
+                LocalDate.parse("2000-11-30"));
+        filmStorage.create(film);
+        userStorage.create(user);
+        filmStorage.likeFilm(film.getId(), user.getId());
+        assertTrue(film.getLikes().contains(user.getId()));
+    }
+
+    @Test
+    public void dislikeFilm() {
+        Film film = new Film(0, "Avatar", "Blockbuster" + "*".repeat(200),
+                LocalDate.parse("2023-01-01"), 200);
+        User user = new User("john", null, "john.doe@hotmail.com",
+                LocalDate.parse("2000-11-30"));
+        filmStorage.create(film);
+        userStorage.create(user);
+        filmStorage.likeFilm(film.getId(), user.getId());
+        filmStorage.dislikeFilm(film.getId(), user.getId());
+        assertFalse(film.getLikes().contains(user.getId()));
     }
 }
 
