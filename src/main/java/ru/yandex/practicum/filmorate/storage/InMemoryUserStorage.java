@@ -31,7 +31,7 @@ public class InMemoryUserStorage implements UserStorage {
     public User update(User user) {
         if (!users.containsKey(user.getId())) {
             log.warn("Such user was not found");
-            throw new NoSuchUser();
+            throw new NoSuchUser("Such user was not found");
         }
         users.put(user.getId(), user);
         log.info("User {} is updated", user);
@@ -41,7 +41,7 @@ public class InMemoryUserStorage implements UserStorage {
     public User getUserById(int userId) {
         if (!users.containsKey(userId)) {
             log.warn("Such user was not found");
-            throw new NoSuchUser();
+            throw new NoSuchUser("Such user was not found");
         }
         log.info("User {} is retrieved", userId);
         return users.get(userId);

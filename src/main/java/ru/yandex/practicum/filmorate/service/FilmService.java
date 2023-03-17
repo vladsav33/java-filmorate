@@ -38,22 +38,22 @@ public class FilmService {
     public Film likeFilm(int filmId, int userId) {
         if (filmStorage.getFilmById(filmId) == null) {
             log.warn("Such film was not found");
-            throw new NoSuchFilm();
+            throw new NoSuchFilm("Such film was not found");
         }
         if (userStorage.getUserById(userId) == null) {
             log.warn("Such user was not found");
-            throw new NoSuchUser();
+            throw new NoSuchUser("Such user was not found");
         }
         return filmStorage.likeFilm(filmId, userId);
     }
     public Film dislikeFilm(int filmId, int userId) {
         if (filmStorage.getFilmById(filmId) == null) {
             log.warn("Such film was not found");
-            throw new NoSuchFilm();
+            throw new NoSuchFilm("Such film was not found");
         }
         if (userStorage.getUserById(userId) == null) {
             log.warn("Such user was not found");
-            throw new NoSuchUser();
+            throw new NoSuchUser("Such user was not found");
         }
         return filmStorage.dislikeFilm(filmId, userId);
     }

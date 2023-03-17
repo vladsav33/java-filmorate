@@ -30,7 +30,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     public Film update(Film film) {
         if (!films.containsKey(film.getId())) {
             log.warn("Such film was not found");
-            throw new NoSuchFilm();
+            throw new NoSuchFilm("Such film was not found");
         }
         films.put(film.getId(), film);
         log.info("Film {} is updated", film);
@@ -40,7 +40,7 @@ public class InMemoryFilmStorage implements FilmStorage {
     public Film getFilmById(int filmId) {
         if (!films.containsKey(filmId)) {
             log.warn("Such film was not found");
-            throw new NoSuchFilm();
+            throw new NoSuchFilm("Such film was not found");
         }
         return films.get(filmId);
     }

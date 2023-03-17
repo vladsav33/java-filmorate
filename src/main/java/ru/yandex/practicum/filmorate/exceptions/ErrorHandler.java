@@ -16,28 +16,28 @@ public class ErrorHandler {
     @ExceptionHandler(NoSuchUser.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNotFound(final NoSuchUser exception) {
-        log.warn("User was not found");
+        log.warn(exception.getMessage());
         return Map.of("Object not found", "No such user");
     }
 
     @ExceptionHandler(NoSuchFilm.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, String> handleNotFound(final NoSuchFilm exception) {
-        log.warn("Film was not found");
+        log.warn(exception.getMessage());
         return Map.of("Object not found", "No such film");
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public Map<String, String> handleValidationError(final ValidationException exception) {
-        log.warn("Data validation error");
+        log.warn(exception.getMessage());
         return Map.of("Data validation error", exception.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, String> handleInternalErrors(final RuntimeException exception) {
-        log.warn("Internal Server Error");
+        log.warn(exception.getMessage());
         return Map.of("Internal Server Error", exception.getMessage());
     }
 }
