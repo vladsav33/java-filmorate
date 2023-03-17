@@ -6,21 +6,15 @@ import ru.yandex.practicum.filmorate.exceptions.NoSuchUser;
 import ru.yandex.practicum.filmorate.model.User;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.stream.Collectors;
 
 @Component
 @Slf4j
 public class InMemoryUserStorage implements UserStorage {
     private int idCounter = 0;
     private final Map<Integer, User> users = new HashMap<>();
-
-    public Map<Integer, User> getUsers() {
-        return users;
-    }
 
     public List<User> findAll() {
         log.warn("The list of users returned");
@@ -73,11 +67,10 @@ public class InMemoryUserStorage implements UserStorage {
         return user;
     }
 
-    public Set<User> getFriends(int userId) {
-        Set<User> friends = new LinkedHashSet<>();
-        for (int id : users.get(userId).getFriends()) {
-            friends.add(getUserById(id));
-        }
+    public List<User> getFriends(int userId) {
+        List<User> friends = users.get(userId).getFriends().stream()
+                .map(u -> getUserById(u))
+                .collect(Collectors.toList());
         if (friends.isEmpty()) {
             log.info("No friends were found");
         }
@@ -85,12 +78,9 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     public List<User> getCommonFriends(int userId, int otherId) {
-        List<User> list = new LinkedList<>();
-        for(User user : getFriends(userId)) {
-            if (getFriends(otherId).contains(user)) {
-                list.add(user);
-            }
-        }
+        List<User> list = getFriends(userId).stream()
+                .filter(u -> (getFriends(otherId).contains(u)))
+                .collect(Collectors.toList());
         if (list.isEmpty()) {
             log.info("No common friends");
         }

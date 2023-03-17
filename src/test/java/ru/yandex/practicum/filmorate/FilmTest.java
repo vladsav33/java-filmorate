@@ -20,8 +20,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class FilmTest {
     private static Validator validator;
-    public FilmStorage filmStorage;
-    public UserStorage userStorage;
+    private FilmStorage filmStorage;
+    private UserStorage userStorage;
 
     @BeforeAll
     public static void setUpFactory() {

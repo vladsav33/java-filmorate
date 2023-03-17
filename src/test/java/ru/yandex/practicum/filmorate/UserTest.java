@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class UserTest {
     private static Validator validator;
-    public UserStorage userStorage;
+    private UserStorage userStorage;
 
     @BeforeAll
     public static void setUpFactory() {

@@ -1,22 +1,33 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exceptions.NoSuchUser;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 import java.util.List;
-import java.util.Set;
 
 @Service
 @Slf4j
+@RequiredArgsConstructor
 public class UserService {
     private final UserStorage userStorage;
 
-    @Autowired
-    public UserService(UserStorage userStorage) {
-        this.userStorage = userStorage;
+    public List<User> findAll() {
+        return userStorage.findAll();
+    }
+
+    public User getUserById(int userId) {
+        return userStorage.getUserById(userId);
+    }
+
+    public User create(User user) {
+        return userStorage.create(user);
+    }
+
+    public User update(User user) {
+        return userStorage.update(user);
     }
 
     public User addFriend(int userId, int friendId) {
@@ -35,7 +46,7 @@ public class UserService {
         return userStorage.deleteFriend(userId, friendId);
     }
 
-    public Set<User> getFriends(int userId) {
+    public List<User> getFriends(int userId) {
         if (userStorage.getUserById(userId) == null) {
             log.warn("Such user was not found");
             throw new NoSuchUser();
