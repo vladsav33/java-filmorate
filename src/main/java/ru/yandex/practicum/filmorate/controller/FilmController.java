@@ -20,13 +20,13 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class FilmController {
 
-    private final FilmStorage inMemoryFilmStorage;
+    private final FilmStorage filmStorage;
     private final ValidateService validateService;
 
     @GetMapping
     public Collection<Film> findAll() {
         log.info("Вывести все фильмы");
-        return inMemoryFilmStorage.get();
+        return filmStorage.get();
     }
 
     @PostMapping
@@ -35,7 +35,7 @@ public class FilmController {
         log.info("Создаем фильм: {}", film);
         generateCustomValidateException(film, bindingResult);
         validateService.validateFilm(film);
-        Film createdFilm = inMemoryFilmStorage.create(film);
+        Film createdFilm = filmStorage.create(film);
         return createdFilm;
     }
 
@@ -44,7 +44,7 @@ public class FilmController {
         log.info("Обновляем фильм: {}", film);
         generateCustomValidateException(film, bindingResult);
         validateService.validateFilm(film);
-        Film updatedFilm = inMemoryFilmStorage.update(film);
+        Film updatedFilm = filmStorage.update(film);
         if (updatedFilm == null) {
             log.warn("Фильм с таким ID отсутствует: {}", film);
             throw new HttpMethodException("Фильм с таким ID отсутствует. Используйте метод POST");

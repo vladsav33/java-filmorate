@@ -20,13 +20,13 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserStorage inMemoryUserStorage;
+    private final UserStorage userStorage;
     private final ValidateService validateService;
 
     @GetMapping
     public Collection<User> findAll() {
         log.info("Вывести всех пользователей");
-        return inMemoryUserStorage.get();
+        return userStorage.get();
     }
 
     @PostMapping
@@ -35,7 +35,7 @@ public class UserController {
         log.info("Создаем пользователя: {}", user);
         generateCustomValidateException(user, bindingResult);
         validateService.validateUser(user);
-        return inMemoryUserStorage.create(user);
+        return userStorage.create(user);
     }
 
     @PutMapping
@@ -43,7 +43,7 @@ public class UserController {
         log.info("Обновляем пользователя: {}", user);
         generateCustomValidateException(user, bindingResult);
         validateService.validateUser(user);
-        User updatedUser = inMemoryUserStorage.update(user);
+        User updatedUser = userStorage.update(user);
         if (updatedUser == null) {
             log.warn("Пользователь с таким ID отсутствует: {}", user);
             throw new HttpMethodException("Пользователь с таким ID отсутствует. Используйте метод POST");
