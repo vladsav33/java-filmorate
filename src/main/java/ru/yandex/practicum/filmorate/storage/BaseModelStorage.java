@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.model.BaseModel;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @Component
 @Slf4j
@@ -16,6 +17,10 @@ public abstract class BaseModelStorage<T extends BaseModel> {
 
     public Collection<T> get() {
         return models.values();
+    }
+
+    public Optional<T> getById(int id){
+        return Optional.ofNullable(models.get(id));
     }
 
     public T create(T baseModel) {
