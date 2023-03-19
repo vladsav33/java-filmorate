@@ -1,4 +1,4 @@
-package ru.yandex.practicum.filmorate.dao;
+package ru.yandex.practicum.filmorate.storage;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -10,7 +10,7 @@ import java.util.Map;
 
 @Component
 @Slf4j
-public abstract class BaseModelRepository<T extends BaseModel> {
+public abstract class BaseModelStorage<T extends BaseModel> {
     private final Map<Integer, T> models = new HashMap<>();
     private int idCounter;
 

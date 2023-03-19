@@ -5,11 +5,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dao.UserRepository;
 import ru.yandex.practicum.filmorate.exception.HttpMethodException;
 import ru.yandex.practicum.filmorate.exception.UserValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.ValidateService;
+import ru.yandex.practicum.filmorate.storage.UserStorage;
 
 import javax.validation.Valid;
 import java.util.Collection;
@@ -20,13 +20,13 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class UserController {
 
-    private final UserRepository userRepository;
+    private final UserStorage inMemoryUserStorage;
     private final ValidateService validateService;
 
     @GetMapping
     public Collection<User> findAll() {
         log.info("Вывести всех пользователей");
-        return userRepository.get();
+        return inMemoryUserStorage.get();
     }
 
     @PostMapping
@@ -35,7 +35,7 @@ public class UserController {
         log.info("Создаем пользователя: {}", user);
         generateCustomValidateException(user, bindingResult);
         validateService.validateUser(user);
-        return userRepository.create(user);
+        return inMemoryUserStorage.create(user);
     }
 
     @PutMapping
@@ -43,7 +43,7 @@ public class UserController {
         log.info("Обновляем пользователя: {}", user);
         generateCustomValidateException(user, bindingResult);
         validateService.validateUser(user);
-        User updatedUser = userRepository.update(user);
+        User updatedUser = inMemoryUserStorage.update(user);
         if (updatedUser == null) {
             log.warn("Пользователь с таким ID отсутствует: {}", user);
             throw new HttpMethodException("Пользователь с таким ID отсутствует. Используйте метод POST");
