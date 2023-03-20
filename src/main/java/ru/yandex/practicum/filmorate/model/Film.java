@@ -7,6 +7,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
+import java.util.Set;
 
 @Data
 @Builder
@@ -23,4 +24,5 @@ public class Film extends BaseModel {
     private LocalDate releaseDate;
     @Positive
     private int duration;
+    private Set<Integer> likes;
 }
