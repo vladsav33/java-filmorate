@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
@@ -13,6 +14,7 @@ import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class UserService {
     private final UserStorage userStorage;
 
@@ -27,6 +29,7 @@ public class UserService {
         }
 
         user.getFriends().add(friendId);
+        log.debug("Добавлен в друзья пользователь ID = {} пользователю: {}", friendId, user);
     }
 
     public void removeFriend(int userId, int friendId) {
@@ -40,6 +43,7 @@ public class UserService {
         }
 
         user.getFriends().remove(friendId);
+        log.debug("Удален из друзей пользователь ID = {} у пользователя: {}", friendId, user);
     }
 
     public Collection<User> getCommonFriends(int userId, int otherUserId) {
@@ -57,6 +61,7 @@ public class UserService {
     }
 
     private void checkUserId(int id) {
+        log.warn("Пользователь с ID = " + id + " не найден.");
         userStorage.getById(id).orElseThrow(() -> new UserNotFoundException("Пользователь с ID = " + id + " не найден."));
     }
 }
