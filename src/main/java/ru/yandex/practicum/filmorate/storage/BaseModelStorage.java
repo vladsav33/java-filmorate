@@ -19,7 +19,7 @@ public abstract class BaseModelStorage<T extends BaseModel> {
         return models.values();
     }
 
-    public Optional<T> getById(int id){
+    public Optional<T> getById(int id) {
         return Optional.ofNullable(models.get(id));
     }
 

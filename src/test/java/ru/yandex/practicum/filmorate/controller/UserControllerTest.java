@@ -7,10 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.ValidateService;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 import java.util.List;

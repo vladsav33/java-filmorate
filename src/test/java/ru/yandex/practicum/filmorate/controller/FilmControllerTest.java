@@ -7,10 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.ValidateService;
+import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
+import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -50,7 +50,7 @@ class FilmControllerTest {
 
     @SneakyThrows
     @Test
-    void createValidFIlm() {
+    void createValidFilm() {
         Film filmToCreate = Film.builder().name("name").description("description").releaseDate(LocalDate.of(2000, 1, 1)).duration(100).build();
         when(inMemoryFilmStorage.create(filmToCreate)).thenReturn(filmToCreate);
 
@@ -62,7 +62,7 @@ class FilmControllerTest {
 
     @SneakyThrows
     @Test
-    void createInValidFIlm() {
+    void createInvalidFilm() {
         Film filmToCreate = Film.builder().build();
         when(inMemoryFilmStorage.create(filmToCreate)).thenReturn(filmToCreate);
 
@@ -73,7 +73,7 @@ class FilmControllerTest {
 
     @SneakyThrows
     @Test
-    void updateValidFIlm() {
+    void updateValidFilm() {
         Film filmToUpdate = Film.builder().name("name").description("description").releaseDate(LocalDate.of(2000, 1, 1)).duration(100).build();
         when(inMemoryFilmStorage.update(filmToUpdate)).thenReturn(filmToUpdate);
 
@@ -85,7 +85,7 @@ class FilmControllerTest {
 
     @SneakyThrows
     @Test
-    void updateInValidFIlm() {
+    void updateInvalidFilm() {
         Film filmToUpdate = Film.builder().build();
         when(inMemoryFilmStorage.update(filmToUpdate)).thenReturn(filmToUpdate);
 
@@ -96,7 +96,7 @@ class FilmControllerTest {
 
     @SneakyThrows
     @Test
-    void updateFIlmWithWrongId() {
+    void updateFilmWithWrongId() {
         Film filmToUpdate = Film.builder().name("name").description("description").releaseDate(LocalDate.of(2000, 1, 1)).duration(100).build();
         when(inMemoryFilmStorage.update(filmToUpdate)).thenReturn(null);
 
