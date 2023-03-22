@@ -8,9 +8,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.service.ValidateService;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,15 +24,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class FilmControllerTest {
 
     @MockBean
-    private InMemoryUserStorage inMemoryUserStorage;
-    @MockBean
-    private InMemoryFilmStorage inMemoryFilmStorage;
+    private FilmService filmService;
     @MockBean
     private ValidateService validateService;
+    @MockBean
+    private UserService userService;
 
     @Autowired
     private ObjectMapper objectMapper;
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -40,11 +39,11 @@ class FilmControllerTest {
     @Test
     void getFilms() {
         Film filmToCreate = Film.builder().name("name").description("description").releaseDate(LocalDate.of(2000, 1, 1)).duration(100).build();
-        when(inMemoryFilmStorage.get()).thenReturn(List.of(filmToCreate));
+        when(filmService.findAll()).thenReturn(List.of(filmToCreate));
 
         String response = mockMvc.perform(get("/films").contentType("application/json")).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
-        verify(inMemoryFilmStorage).get();
+        verify(filmService).findAll();
         assertEquals(objectMapper.writeValueAsString(List.of(filmToCreate)), response);
     }
 
@@ -52,11 +51,11 @@ class FilmControllerTest {
     @Test
     void createValidFilm() {
         Film filmToCreate = Film.builder().name("name").description("description").releaseDate(LocalDate.of(2000, 1, 1)).duration(100).build();
-        when(inMemoryFilmStorage.create(filmToCreate)).thenReturn(filmToCreate);
+        when(filmService.createFilm(filmToCreate)).thenReturn(filmToCreate);
 
         String response = mockMvc.perform(post("/films").contentType("application/json").content(objectMapper.writeValueAsString(filmToCreate))).andExpect(status().isCreated()).andReturn().getResponse().getContentAsString();
 
-        verify(inMemoryFilmStorage).create(filmToCreate);
+        verify(filmService).createFilm(filmToCreate);
         assertEquals(objectMapper.writeValueAsString(filmToCreate), response);
     }
 
@@ -64,22 +63,22 @@ class FilmControllerTest {
     @Test
     void createInvalidFilm() {
         Film filmToCreate = Film.builder().build();
-        when(inMemoryFilmStorage.create(filmToCreate)).thenReturn(filmToCreate);
+        when(filmService.createFilm(filmToCreate)).thenReturn(filmToCreate);
 
         mockMvc.perform(post("/films").contentType("application/json").content(objectMapper.writeValueAsString(filmToCreate))).andExpect(status().isBadRequest());
 
-        verify(inMemoryFilmStorage, never()).create(any());
+        verify(filmService, never()).createFilm(any());
     }
 
     @SneakyThrows
     @Test
     void updateValidFilm() {
         Film filmToUpdate = Film.builder().name("name").description("description").releaseDate(LocalDate.of(2000, 1, 1)).duration(100).build();
-        when(inMemoryFilmStorage.update(filmToUpdate)).thenReturn(filmToUpdate);
+        when(filmService.updateFilm(filmToUpdate)).thenReturn(filmToUpdate);
 
         String response = mockMvc.perform(put("/films").contentType("application/json").content(objectMapper.writeValueAsString(filmToUpdate))).andExpect(status().isOk()).andReturn().getResponse().getContentAsString();
 
-        verify(inMemoryFilmStorage).update(filmToUpdate);
+        verify(filmService).updateFilm(filmToUpdate);
         assertEquals(objectMapper.writeValueAsString(filmToUpdate), response);
     }
 
@@ -87,22 +86,10 @@ class FilmControllerTest {
     @Test
     void updateInvalidFilm() {
         Film filmToUpdate = Film.builder().build();
-        when(inMemoryFilmStorage.update(filmToUpdate)).thenReturn(filmToUpdate);
+        when(filmService.updateFilm(filmToUpdate)).thenReturn(filmToUpdate);
 
         mockMvc.perform(put("/films").contentType("application/json").content(objectMapper.writeValueAsString(filmToUpdate))).andExpect(status().isBadRequest());
 
-        verify(inMemoryFilmStorage, never()).update(any());
-    }
-
-    @SneakyThrows
-    @Test
-    void updateFilmWithWrongId() {
-        Film filmToUpdate = Film.builder().name("name").description("description").releaseDate(LocalDate.of(2000, 1, 1)).duration(100).build();
-        when(inMemoryFilmStorage.update(filmToUpdate)).thenReturn(null);
-
-        String response = mockMvc.perform(put("/films").contentType("application/json").content(objectMapper.writeValueAsString(filmToUpdate))).andExpect(status().isNotFound()).andReturn().getResponse().getContentAsString();
-
-        verify(inMemoryFilmStorage).update(filmToUpdate);
-        assertEquals("", response);
+        verify(filmService, never()).updateFilm(any());
     }
 }

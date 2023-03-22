@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.UserStorage;
 
@@ -21,29 +22,38 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final UserStorage userStorage;
 
-    public void addLike(int filmId, int userId) {
-        checkFilmId(filmId);
-        checkUserId(userId);
+    public Collection<Film> findAll() {
+        return filmStorage.get();
+    }
 
-        Film film = filmStorage.getById(filmId).get();
+    public Film findById(int filmId) {
+        return checkFilmId(filmId);
+    }
 
+    public Film createFilm(Film film) {
+        film.setLikes(new HashSet<>());
+        return filmStorage.create(film);
+    }
+
+    public Film updateFilm(Film film) {
         if (film.getLikes() == null) {
             film.setLikes(new HashSet<>());
         }
+        return filmStorage.update(film).orElseThrow(()
+                -> new FilmNotFoundException("Фильм с ID = " + film.getId() + " не найден."));
+    }
+
+    public void addLike(int filmId, int userId) {
+        Film film = checkFilmId(filmId);
+        checkUserId(userId);
 
         film.getLikes().add(userId);
         log.debug("Добавлен лайк от пользователя ID = {} в фильм: {}", userId, film);
     }
 
     public void removeLike(int filmId, int userId) {
-        checkFilmId(filmId);
+        Film film = checkFilmId(filmId);
         checkUserId(userId);
-
-        Film film = filmStorage.getById(filmId).get();
-
-        if (film.getLikes() == null) {
-            return;
-        }
 
         film.getLikes().remove(userId);
         log.debug("Удален лайк от пользователя ID = {} в фильме: {}", userId, film);
@@ -60,13 +70,11 @@ public class FilmService {
         return -1 * (f0.getLikes().size() - f1.getLikes().size()); //обратный порядок
     }
 
-    private void checkUserId(int id) {
-        log.warn("Пользователь с ID = " + id + " не найден.");
-        userStorage.getById(id).orElseThrow(() -> new UserNotFoundException("Пользователь с ID = " + id + " не найден."));
+    private User checkUserId(int id) {
+        return userStorage.getById(id).orElseThrow(() -> new UserNotFoundException("Пользователь с ID = " + id + " не найден."));
     }
 
-    private void checkFilmId(int id) {
-        log.warn("Фильм с ID = " + id + " не найден.");
-        filmStorage.getById(id).orElseThrow(() -> new FilmNotFoundException("Фильм с ID = " + id + " не найден."));
+    private Film checkFilmId(int id) {
+        return filmStorage.getById(id).orElseThrow(() -> new FilmNotFoundException("Фильм с ID = " + id + " не найден."));
     }
 }

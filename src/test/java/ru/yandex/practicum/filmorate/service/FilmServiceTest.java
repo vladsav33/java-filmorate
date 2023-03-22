@@ -84,7 +84,7 @@ class FilmServiceTest {
 
         filmService.addLike(filmId, userId);
 
-        verify(inMemoryFilmStorage, times(2)).getById(filmId);
+        verify(inMemoryFilmStorage).getById(filmId);
         verify(inMemoryUserStorage).getById(userId);
         assertEquals(1, film.getLikes().size());
         assertEquals(Set.of(userId), film.getLikes());
@@ -118,7 +118,7 @@ class FilmServiceTest {
 
         filmService.removeLike(filmId, userId);
 
-        verify(inMemoryFilmStorage, times(2)).getById(filmId);
+        verify(inMemoryFilmStorage).getById(filmId);
         verify(inMemoryUserStorage).getById(userId);
         assertEquals(0, film.getLikes().size());
     }
@@ -131,7 +131,7 @@ class FilmServiceTest {
 
         filmService.removeLike(filmId, userId);
 
-        verify(inMemoryFilmStorage, times(2)).getById(filmId);
+        verify(inMemoryFilmStorage).getById(filmId);
         verify(inMemoryUserStorage).getById(userId);
         assertEquals(0, film.getLikes().size());
     }
