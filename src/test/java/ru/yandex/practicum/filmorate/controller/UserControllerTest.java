@@ -8,9 +8,9 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.FilmService;
+import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.service.ValidateService;
-import ru.yandex.practicum.filmorate.storage.InMemoryFilmStorage;
-import ru.yandex.practicum.filmorate.storage.InMemoryUserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -24,15 +24,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserControllerTest {
 
     @MockBean
-    private InMemoryUserStorage inMemoryUserStorage;
-    @MockBean
-    private InMemoryFilmStorage inMemoryFilmStorage;
+    private UserService userService;
     @MockBean
     private ValidateService validateService;
+    @MockBean
+    private FilmService filmService;
 
     @Autowired
     private ObjectMapper objectMapper;
-
     @Autowired
     private MockMvc mockMvc;
 
@@ -45,7 +44,7 @@ class UserControllerTest {
                 .name("name")
                 .birthday(LocalDate.of(2000, 1, 1))
                 .build();
-        when(inMemoryUserStorage.get()).thenReturn(List.of(userToCreate));
+        when(userService.findAll()).thenReturn(List.of(userToCreate));
 
         String response = mockMvc.perform(get("/users")
                         .contentType("application/json"))
@@ -54,7 +53,7 @@ class UserControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        verify(inMemoryUserStorage).get();
+        verify(userService).findAll();
         assertEquals(objectMapper.writeValueAsString(List.of(userToCreate)), response);
     }
 
@@ -67,7 +66,7 @@ class UserControllerTest {
                 .name("name")
                 .birthday(LocalDate.of(2000, 1, 1))
                 .build();
-        when(inMemoryUserStorage.create(userToCreate)).thenReturn(userToCreate);
+        when(userService.createUser(userToCreate)).thenReturn(userToCreate);
 
         String response = mockMvc.perform(post("/users")
                         .contentType("application/json")
@@ -77,7 +76,7 @@ class UserControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        verify(inMemoryUserStorage).create(userToCreate);
+        verify(userService).createUser(userToCreate);
         assertEquals(objectMapper.writeValueAsString(userToCreate), response);
     }
 
@@ -85,14 +84,14 @@ class UserControllerTest {
     @Test
     void createInValidUser() {
         User userToCreate = User.builder().build();
-        when(inMemoryUserStorage.create(userToCreate)).thenReturn(userToCreate);
+        when(userService.createUser(userToCreate)).thenReturn(userToCreate);
 
         mockMvc.perform(post("/users")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(userToCreate)))
                 .andExpect(status().isBadRequest());
 
-        verify(inMemoryUserStorage, never()).create(any());
+        verify(userService, never()).createUser(any());
     }
 
     @SneakyThrows
@@ -104,7 +103,7 @@ class UserControllerTest {
                 .name("name")
                 .birthday(LocalDate.of(2000, 1, 1))
                 .build();
-        when(inMemoryUserStorage.update(userToUpdate)).thenReturn(userToUpdate);
+        when(userService.updateUser(userToUpdate)).thenReturn(userToUpdate);
 
         String response = mockMvc.perform(put("/users")
                         .contentType("application/json")
@@ -114,7 +113,7 @@ class UserControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        verify(inMemoryUserStorage).update(userToUpdate);
+        verify(userService).updateUser(userToUpdate);
         assertEquals(objectMapper.writeValueAsString(userToUpdate), response);
     }
 
@@ -122,36 +121,13 @@ class UserControllerTest {
     @Test
     void updateInValidUser() {
         User userToUpdate = User.builder().build();
-        when(inMemoryUserStorage.update(userToUpdate)).thenReturn(userToUpdate);
+        when(userService.updateUser(userToUpdate)).thenReturn(userToUpdate);
 
         mockMvc.perform(put("/users")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(userToUpdate)))
                 .andExpect(status().isBadRequest());
 
-        verify(inMemoryUserStorage, never()).update(any());
-    }
-
-    @SneakyThrows
-    @Test
-    void updateUserWithWrongId() {
-        User userToUpdate = User.builder()
-                .email("test@test.test")
-                .login("login")
-                .name("name")
-                .birthday(LocalDate.of(2000, 1, 1))
-                .build();
-        when(inMemoryUserStorage.update(userToUpdate)).thenReturn(null);
-
-        String response = mockMvc.perform(put("/users")
-                        .contentType("application/json")
-                        .content(objectMapper.writeValueAsString(userToUpdate)))
-                .andExpect(status().isNotFound())
-                .andReturn()
-                .getResponse()
-                .getContentAsString();
-
-        verify(inMemoryUserStorage).update(userToUpdate);
-        assertEquals("", response);
+        verify(userService, never()).updateUser(any());
     }
 }

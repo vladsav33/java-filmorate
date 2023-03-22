@@ -17,6 +17,7 @@ import static org.mockito.Mockito.*;
 
 class UserServiceTest {
 
+
     private final UserStorage inMemoryUserStorage = Mockito.mock(InMemoryUserStorage.class);
 
     private final UserService userService = new UserService(inMemoryUserStorage);
@@ -43,6 +44,7 @@ class UserServiceTest {
     @BeforeEach
     void setFriends() {
         user.setFriends(new HashSet<>());
+        otherUser.setFriends(new HashSet<>());
     }
 
     @Test
@@ -73,7 +75,7 @@ class UserServiceTest {
 
         userService.addFriend(userId, otherUserId);
 
-        verify(inMemoryUserStorage, times(2)).getById(userId);
+        verify(inMemoryUserStorage).getById(userId);
         verify(inMemoryUserStorage).getById(otherUserId);
         assertEquals(1, user.getFriends().size());
         assertEquals(Set.of(otherUserId), user.getFriends());
@@ -107,7 +109,7 @@ class UserServiceTest {
 
         userService.removeFriend(userId, otherUserId);
 
-        verify(inMemoryUserStorage, times(2)).getById(userId);
+        verify(inMemoryUserStorage).getById(userId);
         verify(inMemoryUserStorage).getById(otherUserId);
         assertEquals(0, user.getFriends().size());
     }
@@ -120,7 +122,7 @@ class UserServiceTest {
 
         userService.removeFriend(userId, otherUserId);
 
-        verify(inMemoryUserStorage, times(2)).getById(userId);
+        verify(inMemoryUserStorage).getById(userId);
         verify(inMemoryUserStorage).getById(otherUserId);
         assertEquals(0, user.getFriends().size());
     }
@@ -135,7 +137,7 @@ class UserServiceTest {
 
         Collection<User> commonFriends = userService.getCommonFriends(userId, otherUserId);
 
-        verify(inMemoryUserStorage, times(2)).getById(userId);
+        verify(inMemoryUserStorage).getById(userId);
         verify(inMemoryUserStorage).getById(commonFriendId);
         verify(inMemoryUserStorage, never()).getById(otherFriendId);
         assertEquals(1, commonFriends.size());
