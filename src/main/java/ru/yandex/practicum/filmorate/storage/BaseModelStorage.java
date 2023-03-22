@@ -30,12 +30,12 @@ public abstract class BaseModelStorage<T extends BaseModel> {
         return baseModel;
     }
 
-    public T update(T baseModel) {
+    public Optional<T> update(T baseModel) {
         if (!models.containsKey(baseModel.getId())) {
-            return null;
+            return Optional.empty();
         }
         models.put(baseModel.getId(), baseModel);
         log.debug("Обновлена модель: {}", baseModel);
-        return baseModel;
+        return Optional.of(baseModel);
     }
 }

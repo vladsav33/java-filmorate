@@ -12,5 +12,5 @@ public interface FilmStorage {
 
     public Film create(Film film);
 
-    public Film update(Film film);
+    public Optional<Film> update(Film film);
 }
