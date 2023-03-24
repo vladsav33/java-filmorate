@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Builder;
 import lombok.Data;
 
@@ -24,5 +25,6 @@ public class User extends BaseModel {
     private String name;
     @Past
     private LocalDate birthday;
+    @JsonIgnore
     private Set<Integer> friends;
 }
