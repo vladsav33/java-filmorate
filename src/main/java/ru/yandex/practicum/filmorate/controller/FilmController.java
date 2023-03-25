@@ -5,10 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dao.FilmRepository;
 import ru.yandex.practicum.filmorate.exception.FilmValidationException;
-import ru.yandex.practicum.filmorate.exception.HttpMethodException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.ValidateService;
 
 import javax.validation.Valid;
@@ -20,36 +19,54 @@ import java.util.Collection;
 @RequiredArgsConstructor
 public class FilmController {
 
-    private final FilmRepository filmRepository;
+    private final FilmService filmService;
     private final ValidateService validateService;
 
     @GetMapping
     public Collection<Film> findAll() {
         log.info("Вывести все фильмы");
-        return filmRepository.get();
+        return filmService.findAll();
+    }
+
+    @GetMapping("/{filmId}")
+    public Film findById(@PathVariable int filmId) {
+        log.info("Вывести пользователя ID = {}", filmId);
+        return filmService.findById(filmId);
+    }
+
+    @GetMapping("/popular")
+    public Collection<Film> getPopular(@RequestParam(defaultValue = "10") int count) {
+        log.info("Вывести ТОП {} фильмов", count);
+        return filmService.getTop(count);
+    }
+
+    @PutMapping("/{filmId}/like/{userId}")
+    public void addLike(@PathVariable int filmId, @PathVariable int userId) {
+        log.info("Добавляем лайк фильму ID = {} от пользователя ID = {}", filmId, userId);
+        filmService.addLike(filmId, userId);
+    }
+
+    @DeleteMapping("/{filmId}/like/{userId}")
+    public void removeLike(@PathVariable int filmId, @PathVariable int userId) {
+        log.info("Удаляем лайк у фильма ID = {} от пользователя ID = {}", filmId, userId);
+        filmService.removeLike(filmId, userId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Film create(@RequestBody @Valid Film film, BindingResult bindingResult) {
+    public Film createFilm(@RequestBody @Valid Film film, BindingResult bindingResult) {
         log.info("Создаем фильм: {}", film);
         generateCustomValidateException(film, bindingResult);
         validateService.validateFilm(film);
-        Film createdFilm = filmRepository.create(film);
-        return createdFilm;
+        return filmService.createFilm(film);
     }
 
     @PutMapping
-    public Film update(@RequestBody @Valid Film film, BindingResult bindingResult) {
+    public Film updateFilm(@RequestBody @Valid Film film, BindingResult bindingResult) {
         log.info("Обновляем фильм: {}", film);
         generateCustomValidateException(film, bindingResult);
         validateService.validateFilm(film);
-        Film updatedFilm = filmRepository.update(film);
-        if (updatedFilm == null) {
-            log.warn("Фильм с таким ID отсутствует: {}", film);
-            throw new HttpMethodException("Фильм с таким ID отсутствует. Используйте метод POST");
-        }
-        return updatedFilm;
+        return filmService.updateFilm(film);
     }
 
     private void generateCustomValidateException(Film film, BindingResult bindingResult) {

@@ -5,10 +5,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.dao.UserRepository;
-import ru.yandex.practicum.filmorate.exception.HttpMethodException;
 import ru.yandex.practicum.filmorate.exception.UserValidationException;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.service.ValidateService;
 
 import javax.validation.Valid;
@@ -19,36 +18,60 @@ import java.util.Collection;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
-
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final ValidateService validateService;
 
     @GetMapping
     public Collection<User> findAll() {
         log.info("Вывести всех пользователей");
-        return userRepository.get();
+        return userService.findAll();
+    }
+
+    @GetMapping("/{userId}")
+    public User findById(@PathVariable int userId) {
+        log.info("Вывести пользователя ID = {}", userId);
+        return userService.findById(userId);
+    }
+
+    @GetMapping("/{userId}/friends")
+    public Collection<User> getFriends(@PathVariable int userId) {
+        log.info("Вывести пользователя ID = {}", userId);
+        return userService.getFriends(userId);
+    }
+
+    @GetMapping("/{userId}/friends/common/{otherUserId}")
+    public Collection<User> getCommonFriends(@PathVariable int userId, @PathVariable int otherUserId) {
+        log.info("Вывести общих друзей пользователя ID = {} и пользователя ID = {}", userId, otherUserId);
+        return userService.getCommonFriends(userId, otherUserId);
+    }
+
+    @PutMapping("/{userId}/friends/{friendId}")
+    public void addFriend(@PathVariable int userId, @PathVariable int friendId) {
+        log.info("Добавляем пользователя ID = {} в друзья к пользователю ID = {}", friendId, userId);
+        userService.addFriend(userId, friendId);
+    }
+
+    @DeleteMapping("/{userId}/friends/{friendId}")
+    public void removeFriend(@PathVariable int userId, @PathVariable int friendId) {
+        log.info("Удаляем пользователя ID = {} из друзей пользователя ID = {}", friendId, userId);
+        userService.removeFriend(userId, friendId);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public User create(@RequestBody @Valid User user, BindingResult bindingResult) {
+    public User createUser(@RequestBody @Valid User user, BindingResult bindingResult) {
         log.info("Создаем пользователя: {}", user);
         generateCustomValidateException(user, bindingResult);
         validateService.validateUser(user);
-        return userRepository.create(user);
+        return userService.createUser(user);
     }
 
     @PutMapping
-    public User update(@RequestBody @Valid User user, BindingResult bindingResult) {
+    public User updateUser(@RequestBody @Valid User user, BindingResult bindingResult) {
         log.info("Обновляем пользователя: {}", user);
         generateCustomValidateException(user, bindingResult);
         validateService.validateUser(user);
-        User updatedUser = userRepository.update(user);
-        if (updatedUser == null) {
-            log.warn("Пользователь с таким ID отсутствует: {}", user);
-            throw new HttpMethodException("Пользователь с таким ID отсутствует. Используйте метод POST");
-        }
-        return updatedUser;
+        return userService.updateUser(user);
     }
 
     private void generateCustomValidateException(User user, BindingResult bindingResult) {
