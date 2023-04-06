@@ -2,4 +2,4 @@
 Cервис для работы с фильмами и оценками пользователей
 
 ## Модель данных
-![](src/main/resources/db_model/filmorate.pdf)
+![Text](https://github.com/greblovp/java-filmorate/blob/main/src/main/resources/db_model/filmorate.pdf)
