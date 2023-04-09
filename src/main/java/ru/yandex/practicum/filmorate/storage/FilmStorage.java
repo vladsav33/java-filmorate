@@ -7,10 +7,16 @@ import java.util.Map;
 
 public interface FilmStorage {
     Map<Integer, Film> films = new HashMap<>();
+
     List<Film> findAll();
+
     Film getFilmById(int filmId);
+
     Film create(Film film);
+
     Film update(Film film);
+
     Film likeFilm(int filmId, int userId);
+
     Film dislikeFilm(int filmId, int userId);
 }
