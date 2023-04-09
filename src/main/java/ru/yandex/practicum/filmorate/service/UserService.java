@@ -33,7 +33,7 @@ public class UserService {
     }
 
     public User addFriend(int userId, int friendId) {
-        if (userStorage.getUserById(userId) == null || userStorage.getUserById(friendId) == null ) {
+        if (userStorage.getUserById(userId) == null || userStorage.getUserById(friendId) == null) {
             log.warn("Such user was not found");
             throw new NoSuchUser("Such user was not found");
         }
@@ -41,7 +41,7 @@ public class UserService {
     }
 
     public User deleteFriend(int userId, int friendId) {
-        if (userStorage.getUserById(userId) == null || userStorage.getUserById(friendId) == null ) {
+        if (userStorage.getUserById(userId) == null || userStorage.getUserById(friendId) == null) {
             log.warn("Such user was not found");
             throw new NoSuchUser("Such user was not found");
         }
@@ -57,7 +57,7 @@ public class UserService {
     }
 
     public List<User> getCommonFriends(int userId, int otherId) {
-        if (userStorage.getUserById(userId) == null || userStorage.getUserById(otherId) == null ) {
+        if (userStorage.getUserById(userId) == null || userStorage.getUserById(otherId) == null) {
             log.warn("Such user was not found");
             throw new NoSuchUser("Such user was not found");
         }
