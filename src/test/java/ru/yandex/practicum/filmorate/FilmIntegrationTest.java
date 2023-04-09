@@ -23,6 +23,7 @@ public class FilmIntegrationTest {
     private final FilmDbStorage filmStorage;
     private final UserDbStorage userDbStorage;
     @Test
+
     void findAll() {
         Film film1 = new Film(1, "Avatar 1", "Blockbuster",
                 LocalDate.parse("2023-01-01"), 200, new HashMap<>(), new LinkedList<>(), null);
