@@ -5,15 +5,13 @@ import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.NoSuchFilm;
 import ru.yandex.practicum.filmorate.model.Film;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Component
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
     private int idCounter = 0;
-    private final Map<Integer, Film> films = new HashMap<>();
+//    private final Map<Integer, Film> films = new HashMap<>();
 
     public List<Film> findAll() {
         log.info("The list of films returned");
@@ -47,14 +45,14 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     public Film likeFilm(int filmId, int userId) {
         Film film = getFilmById(filmId);
-        film.getLikes().add(userId);
+//        film.getLikes().add(userId);
         log.info("New like was added for the film {}", filmId);
         return film;
     }
 
     public Film dislikeFilm(int filmId, int userId) {
         Film film = getFilmById(filmId);
-        film.getLikes().remove(userId);
+//        film.getLikes().remove(userId);
         log.info("Like was deleted for the film {}", filmId);
         return film;
     }

@@ -1,0 +1,17 @@
+insert into films (name, description, releaseDate, duration) values ('Film1', 'Desc1', '2020-01-01', 181);
+insert into films (name, description, releaseDate, duration) values ('Film2', 'Desc2', '2020-01-02', 182);
+insert into films (name, description, releaseDate, duration) values ('Film3', 'Desc3', '2020-01-03', 183);
+insert into films (name, description, releaseDate, duration) values ('Film4', 'Desc4', '2020-01-04', 184);
+insert into films (name, description, releaseDate, duration) values ('Film5', 'Desc5', '2020-01-05', 185);
+insert into users (login, name, email, birthday) values ('jd1', 'John Doe1', 'jd1@mail.com', '2001-02-01');
+insert into users (login, name, email, birthday) values ('jd2', 'John Doe2', 'jd1@mail.com', '2001-02-02');
+insert into users (login, name, email, birthday) values ('jd3', 'John Doe3', 'jd1@mail.com', '2001-02-03');
+insert into users (login, name, email, birthday) values ('jd4', 'John Doe4', 'jd1@mail.com', '2001-02-04');
+insert into users (login, name, email, birthday) values ('jd5', 'John Doe5', 'jd1@mail.com', '2001-02-05');
+insert into Friendship (user_id, friend_id, confirmed) values (1, 2, true);
+insert into Friendship (user_id, friend_id, confirmed) values (1, 3, true);
+insert into Friendship (user_id, friend_id, confirmed) values (1, 4, true);
+insert into Friendship (user_id, friend_id, confirmed) values (1, 5, true);
+insert into Friendship (user_id, friend_id, confirmed) values (2, 3, true);
+insert into Friendship (user_id, friend_id, confirmed) values (2, 4, true);
+insert into Friendship (user_id, friend_id, confirmed) values (3, 5, true);
