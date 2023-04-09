@@ -14,6 +14,7 @@ import java.util.List;
 @Component
 public class GenreStorage {
     private final JdbcTemplate jdbcTemplate;
+
     public GenreStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }

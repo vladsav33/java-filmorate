@@ -11,7 +11,6 @@ import java.util.List;
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
     private int idCounter = 0;
-//    private final Map<Integer, Film> films = new HashMap<>();
 
     public List<Film> findAll() {
         log.info("The list of films returned");

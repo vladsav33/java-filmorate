@@ -15,6 +15,7 @@ import java.util.List;
 @Slf4j
 public class MpaStorage {
     private final JdbcTemplate jdbcTemplate;
+
     public MpaStorage(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;
     }
