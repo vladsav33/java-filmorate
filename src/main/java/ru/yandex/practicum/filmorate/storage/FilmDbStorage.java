@@ -24,6 +24,7 @@ import java.util.Set;
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final GenreStorage genreStorage;
+
     public FilmDbStorage(JdbcTemplate jdbcTemplate, GenreStorage genreStorage) {
         this.jdbcTemplate = jdbcTemplate;
         this.genreStorage = genreStorage;
