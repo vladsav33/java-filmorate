@@ -38,6 +38,7 @@ public class FilmService {
     public Genre getGenreById(int genreId) {
         return genreStorage.getGenreById(genreId);
     }
+
     public List<Mpa> findAllMpa() {
         return mpaStorage.findAllMpas();
     }
@@ -70,6 +71,7 @@ public class FilmService {
         }
         return filmStorage.likeFilm(filmId, userId);
     }
+
     public Film dislikeFilm(int filmId, int userId) {
         if (filmStorage.getFilmById(filmId) == null) {
             log.warn("Such film was not found");
