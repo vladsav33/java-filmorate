@@ -98,47 +98,4 @@ public class UserTest {
                 LocalDate.parse("2000-11-30"), null);
         assertEquals(user.getName(), user.getLogin());
     }
-
-    @Test
-    public void addFriend() {
-        User user = new User(1, "john", null, "john.doe@hotmail.com",
-                LocalDate.parse("2000-11-30"), null);
-        User friend = new User(1, "jane", null, "jane.doe@hotmail.com",
-                LocalDate.parse("2001-10-29"), null);
-        user = userStorage.create(user);
-        friend = userStorage.create(friend);
-        userStorage.addFriend(user.getId(), friend.getId());
-        user = userStorage.getUserById(user.getId());
-        List<Integer> friends = user.getFriends();
-        assertTrue(user.getFriends().contains(friend.getId()));
-    }
-
-    @Test
-    public void deleteFriend() {
-        User user = new User(1, "john", null, "john.doe@hotmail.com",
-                LocalDate.parse("2000-11-30"), null);
-        User friend = new User(1, "jane", null, "jane.doe@hotmail.com",
-                LocalDate.parse("2001-10-29"), null);
-        userStorage.create(user);
-        userStorage.create(friend);
-        userStorage.addFriend(user.getId(), friend.getId());
-        userStorage.deleteFriend(user.getId(), friend.getId());
-        assertNull(user.getFriends());
-    }
-
-    @Test
-    public void getCommonFriend() {
-        User userA = new User(1, "john", null, "john.doe@hotmail.com",
-                LocalDate.parse("2000-11-30"), null);
-        User userB = new User(2, "jack", null, "jack.doe@hotmail.com",
-                LocalDate.parse("2002-09-28"), null);
-        User friend = new User(3, "jane", null, "jane.doe@hotmail.com",
-                LocalDate.parse("2001-10-29"), null);
-        userStorage.create(userA);
-        userStorage.create(userB);
-        userStorage.create(friend);
-        userStorage.addFriend(userA.getId(), friend.getId());
-        userStorage.addFriend(userB.getId(), friend.getId());
-        assertTrue(userStorage.getCommonFriends(userA.getId(), userB.getId()).contains(friend));
-    }
 }

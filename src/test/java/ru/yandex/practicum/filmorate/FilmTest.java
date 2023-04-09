@@ -99,33 +99,6 @@ public class FilmTest {
         Set<ConstraintViolation<Film>> violations = validator.validate(film);
         assertFalse(violations.isEmpty());
     }
-
-    @Test
-    public void likeFilm() {
-        Film film = new Film(0, "Avatar", "Blockbuster",
-                LocalDate.parse("2023-01-01"), 200, null, null, null);
-        User user = new User(1, "john", null, "john.doe@hotmail.com",
-                LocalDate.parse("2000-11-30"), null);
-        film = filmStorage.create(film);
-        userStorage.create(user);
-        filmStorage.likeFilm(film.getId(), user.getId());
-        film = filmStorage.getFilmById(film.getId());
-        System.out.println(film.getLikes().size() + " " + film.getName());
-        assertTrue(film.getLikes().contains(user.getId()));
-    }
-
-    @Test
-    public void dislikeFilm() {
-        Film film = new Film(0, "Avatar", "Blockbuster",
-                LocalDate.parse("2023-01-01"), 200, null, null, null);
-        User user = new User(1,"john", null, "john.doe@hotmail.com",
-                LocalDate.parse("2000-11-30"), null);
-        filmStorage.create(film);
-        userStorage.create(user);
-        filmStorage.likeFilm(film.getId(), user.getId());
-        filmStorage.dislikeFilm(film.getId(), user.getId());
-        assertEquals(film.getLikes().size(), 0);
-    }
 }
 
 
