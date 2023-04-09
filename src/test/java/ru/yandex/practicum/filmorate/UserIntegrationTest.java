@@ -19,7 +19,7 @@ public class UserIntegrationTest {
     private final UserDbStorage userStorage;
 
     @Test
-    void FindUserById() {
+    void findUserById() {
         User userTest = new User(1, "john", null, "john.doe@hotmail.com",
                 LocalDate.parse("2000-11-30"), null);
         userStorage.create(userTest);
