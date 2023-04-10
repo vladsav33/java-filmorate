@@ -27,8 +27,8 @@ public class UserIntegrationTest {
                 LocalDate.parse("2000-11-30"), null);
         userTest2 = new User(2, "jane", null, "jane.doe@hotmail.com",
                 LocalDate.parse("2001-10-29"), null);
-
     }
+
     @Test
     void findUserById() {
         userStorage.create(userTest1);
@@ -55,7 +55,6 @@ public class UserIntegrationTest {
         userStorage.update(userTest1);
 
         List<User> users = userStorage.findAll();
-
         assertThat(users).contains(userTest1);
     }
 
@@ -66,7 +65,6 @@ public class UserIntegrationTest {
         userStorage.addFriend(userTest1.getId(), userTest2.getId());
 
         List<User> friends = userStorage.getFriends(userTest1.getId());
-
         assertThat(friends).hasSize(1)
                 .containsOnly(userTest2);
     }
