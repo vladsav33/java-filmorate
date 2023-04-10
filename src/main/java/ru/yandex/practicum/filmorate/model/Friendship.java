@@ -6,7 +6,6 @@ import lombok.Data;
 import java.util.HashMap;
 import java.util.Map;
 
-@Data
 @Builder
 @AllArgsConstructor
 public class Friendship {

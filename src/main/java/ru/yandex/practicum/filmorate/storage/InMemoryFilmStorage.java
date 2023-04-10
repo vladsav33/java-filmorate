@@ -44,14 +44,14 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     public Film likeFilm(int filmId, int userId) {
         Film film = getFilmById(filmId);
-//        film.getLikes().add(userId);
+        film.getLikes().add(userId);
         log.info("New like was added for the film {}", filmId);
         return film;
     }
 
     public Film dislikeFilm(int filmId, int userId) {
         Film film = getFilmById(filmId);
-//        film.getLikes().remove(userId);
+        film.getLikes().remove(userId);
         log.info("Like was deleted for the film {}", filmId);
         return film;
     }

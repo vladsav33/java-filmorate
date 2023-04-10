@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.storage;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -10,6 +11,8 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmGenre;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.Likes;
+import ru.yandex.practicum.filmorate.model.Mpa;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.HashMap;
@@ -18,17 +21,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component("filmStorage")
+@RequiredArgsConstructor
 public class FilmDbStorage implements FilmStorage {
     private final JdbcTemplate jdbcTemplate;
     private final GenreStorage genreStorage;
-
-    public FilmDbStorage(JdbcTemplate jdbcTemplate, GenreStorage genreStorage) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.genreStorage = genreStorage;
-    }
 
     public List<Film> findAll() {
         String sqlQuery = "SELECT f.film_id," +
@@ -62,12 +63,16 @@ public class FilmDbStorage implements FilmStorage {
         if (film.getGenres() == null) {
             return film;
         }
-        for (Map<String, Object> genre : film.getGenres()) {
-            simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                    .withTableName("filmGenre");
-            FilmGenre filmGenre = new FilmGenre(film.getId(), (Integer) genre.get("id"));
-            simpleJdbcInsert.execute(filmGenre.toMap());
-        }
+
+        film.getGenres().stream()
+                .forEach(t -> {
+                    SimpleJdbcInsert filmGenreInsert = new SimpleJdbcInsert(jdbcTemplate)
+                            .withTableName("filmGenre");
+                    FilmGenre filmGenre = new FilmGenre(film.getId(), (Integer) t.get("id"));
+                    log.info("Genre {} for film {}", t.get("id"), film.getId());
+                    filmGenreInsert.execute(filmGenre.toMap());
+                });
+
         return film;
     }
 
@@ -95,15 +100,16 @@ public class FilmDbStorage implements FilmStorage {
         if (film.getGenres() == null) {
             return film;
         }
-        Set<Map<String, Object>> genres = new HashSet<>();
-        genres.addAll(film.getGenres());
-        for (Map<String, Object> genre : genres) {
-            log.info("Film {} has the genre {}", film.getId(), genre.get("id"));
-            SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
-                    .withTableName("FilmGenre");
-            FilmGenre filmGenre = new FilmGenre(film.getId(), (Integer) genre.get("id"));
-            simpleJdbcInsert.execute(filmGenre.toMap());
-        }
+        Set<Map<String, Object>> genres = new HashSet<>(film.getGenres());
+
+        genres.stream()
+                .forEach(t -> {
+                    log.info("Film {} has the genre {}", film.getId(), t.get("id"));
+                    SimpleJdbcInsert simpleJdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
+                            .withTableName("FilmGenre");
+                    FilmGenre filmGenre = new FilmGenre(film.getId(), (Integer) t.get("id"));
+                    simpleJdbcInsert.execute(filmGenre.toMap());
+                });
         return getFilmById(film.getId());
     }
 
@@ -125,15 +131,17 @@ public class FilmDbStorage implements FilmStorage {
             log.warn("Such film was not found");
             throw new NoSuchFilm("Such film was not found");
         }
-        List<Genre> genres = genreStorage.getGenresByFilmId(filmId);
-        List<Map<String, Object>> genresToFilm = new LinkedList<>();
-        for (Genre genre : genres) {
-            Map<String, Object> genreToFilm = new HashMap<>();
-            genreToFilm.put("id", genre.getId());
-            genreToFilm.put("name", genre.getName());
-            genresToFilm.add(genreToFilm);
+
+        List<Map<String, Object>> genresToFilm = genreStorage.getGenresByFilmId(filmId).stream()
+                .map(t -> {
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("id", t.getId());
+                    map.put("name", t.getName());
+                    return map;
+                }).collect(Collectors.toList());
+        if (genresToFilm != null) {
+            film.setGenres(genresToFilm);
         }
-        film.setGenres(genresToFilm);
 
         sqlQuery = "SELECT user_id FROM likes WHERE film_id=?";
         List<Integer> likes = jdbcTemplate.query(sqlQuery, this::mapRowToLike, filmId);
@@ -158,11 +166,42 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     private Film mapRowToFilm(ResultSet resultSet, int rowNum) throws SQLException {
+        return Film.builder()
+                .id(resultSet.getInt("film_id"))
+                .name(resultSet.getString("name"))
+                .description(resultSet.getString("description"))
+                .duration(resultSet.getInt("duration"))
+                .releaseDate(resultSet.getDate("releaseDate").toLocalDate())
+                .mpa(updateRating(resultSet))
+                .genres(updateGenre(resultSet))
+                .build();
+    }
+
+    private Film mapRowToFilmById(ResultSet resultSet, int rowNum) throws SQLException {
+        return Film.builder()
+                .id(resultSet.getInt("film_id"))
+                .name(resultSet.getString("name"))
+                .description(resultSet.getString("description"))
+                .duration(resultSet.getInt("duration"))
+                .releaseDate(resultSet.getDate("releaseDate").toLocalDate())
+                .mpa(updateRating(resultSet))
+                .build();
+    }
+
+    private int mapRowToLike(ResultSet resultSet, int rowNum) throws SQLException {
+        return resultSet.getInt("user_id");
+    }
+
+    private Map<String, Object> updateRating(ResultSet resultSet) throws SQLException {
         Map<String, Object> mpa = new HashMap<>();
         if (resultSet.getString("rating_name") != null) {
             mpa.put("id", resultSet.getInt("rating_id"));
             mpa.put("name", resultSet.getString("rating_name"));
         }
+        return mpa;
+    }
+
+    private List<Map<String, Object>> updateGenre(ResultSet resultSet) throws SQLException {
         List<Map<String, Object>> genres = new LinkedList<>();
         Map<String, Object> genre = new HashMap<>();
         genre.put("id", resultSet.getInt("genre_id"));
@@ -170,35 +209,6 @@ public class FilmDbStorage implements FilmStorage {
         if (resultSet.getString("genre_name") != null) {
             genres.add(genre);
         }
-        return Film.builder()
-                .id(resultSet.getInt("film_id"))
-                .name(resultSet.getString("name"))
-                .description(resultSet.getString("description"))
-                .duration(resultSet.getInt("duration"))
-                .releaseDate(resultSet.getDate("releaseDate").toLocalDate())
-                .mpa(mpa)
-                .genres(genres)
-                .build();
-    }
-
-    private Film mapRowToFilmById(ResultSet resultSet, int rowNum) throws SQLException {
-        Map<String, Object> mpa = new HashMap<>();
-        if (resultSet.getString("rating_name") != null) {
-            mpa.put("id", resultSet.getInt("rating_id"));
-            mpa.put("name", resultSet.getString("rating_name"));
-        }
-        List<Map<String, Object>> genres = new LinkedList<>();
-        return Film.builder()
-                .id(resultSet.getInt("film_id"))
-                .name(resultSet.getString("name"))
-                .description(resultSet.getString("description"))
-                .duration(resultSet.getInt("duration"))
-                .releaseDate(resultSet.getDate("releaseDate").toLocalDate())
-                .mpa(mpa)
-                .build();
-    }
-
-    private int mapRowToLike(ResultSet resultSet, int rowNum) throws SQLException {
-        return resultSet.getInt("user_id");
+        return genres;
     }
 }

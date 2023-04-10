@@ -1,6 +1,7 @@
-package ru.yandex.practicum.filmorate;
+package ru.yandex.practicum.filmorate.storage;
 
 import lombok.RequiredArgsConstructor;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
@@ -17,24 +18,27 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class UserIntegrationTest {
 
     private final UserDbStorage userStorage;
+    private User userTest1;
+    private User userTest2;
 
+    @BeforeEach
+    void setUpTest() {
+        userTest1 = new User(1, "john", null, "john.doe@hotmail.com",
+                LocalDate.parse("2000-11-30"), null);
+        userTest2 = new User(2, "jane", null, "jane.doe@hotmail.com",
+                LocalDate.parse("2001-10-29"), null);
+
+    }
     @Test
     void findUserById() {
-        User userTest = new User(1, "john", null, "john.doe@hotmail.com",
-                LocalDate.parse("2000-11-30"), null);
-        userStorage.create(userTest);
-        userTest = userStorage.getUserById(1);
+        userStorage.create(userTest1);
+        userTest1 = userStorage.getUserById(1);
 
-        assertThat(userTest).hasFieldOrPropertyWithValue("id", 1);
+        assertThat(userTest1).hasFieldOrPropertyWithValue("id", 1);
     }
 
     @Test
     void findAll() {
-        User userTest1 = new User(1, "john", null, "john.doe@hotmail.com",
-                LocalDate.parse("2000-11-30"), null);
-        User userTest2 = new User(2, "jane", null, "jane.doe@hotmail.com",
-                LocalDate.parse("2001-10-29"), null);
-
         userStorage.create(userTest1);
         userStorage.create(userTest2);
         List<User> users = userStorage.findAll();
@@ -44,8 +48,6 @@ public class UserIntegrationTest {
 
     @Test
     void update() {
-        User userTest1 = new User(1, "john", null, "john.doe@hotmail.com",
-                LocalDate.parse("2000-11-30"), null);
         userTest1.setBirthday(LocalDate.parse("2001-10-29"));
         userTest1.setName("jane");
         userTest1.setLogin("jane");
@@ -59,11 +61,6 @@ public class UserIntegrationTest {
 
     @Test
     void addFriend() {
-        User userTest1 = new User(1, "john", null, "john.doe@hotmail.com",
-                LocalDate.parse("2000-11-30"), null);
-        User userTest2 = new User(2, "jane", null, "jane.doe@hotmail.com",
-                LocalDate.parse("2001-10-29"), null);
-
         userStorage.create(userTest1);
         userStorage.create(userTest2);
         userStorage.addFriend(userTest1.getId(), userTest2.getId());
@@ -76,11 +73,6 @@ public class UserIntegrationTest {
 
     @Test
     void deleteFriend() {
-        User userTest1 = new User(1, "john", null, "john.doe@hotmail.com",
-                LocalDate.parse("2000-11-30"), null);
-        User userTest2 = new User(2, "jane", null, "jane.doe@hotmail.com",
-                LocalDate.parse("2001-10-29"), null);
-
         userStorage.create(userTest1);
         userStorage.create(userTest2);
 
@@ -96,10 +88,6 @@ public class UserIntegrationTest {
 
     @Test
     void getCommonFriends() {
-        User userTest1 = new User(1, "john", null, "john.doe@hotmail.com",
-                LocalDate.parse("2000-11-30"), null);
-        User userTest2 = new User(2, "jane", null, "jane.doe@hotmail.com",
-                LocalDate.parse("2001-10-29"), null);
         User friend = new User(3, "friend", null, "jane.friend@hotmail.com",
                 LocalDate.parse("2002-09-19"), null);
 
@@ -113,6 +101,5 @@ public class UserIntegrationTest {
         List<User> friends = userStorage.getCommonFriends(userTest1.getId(), userTest2.getId());
         assertThat(friends).hasSize(1)
                 .containsOnly(friend);
-
     }
 }

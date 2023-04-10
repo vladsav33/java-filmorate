@@ -11,7 +11,10 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Component("userStorage")
@@ -68,7 +71,7 @@ public class UserDbStorage implements UserStorage {
         }
 
         sqlQuery = "SELECT friend_id FROM friendship WHERE user_id=?";
-        List<Integer> friends = jdbcTemplate.query(sqlQuery, this::mapRowToFriend, userId);
+        Set<Integer> friends = new HashSet<>(jdbcTemplate.query(sqlQuery, this::mapRowToFriend, userId));
         log.info("Friends {} were retrieved for the user {}", friends, userId);
         user.setFriends(friends);
 

@@ -6,7 +6,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.exceptions.NoSuchMpa;
 import ru.yandex.practicum.filmorate.model.Mpa;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;

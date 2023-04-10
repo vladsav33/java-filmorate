@@ -10,6 +10,7 @@ import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Data
 @Builder
@@ -26,9 +27,9 @@ public class User {
     private String email;
     @PastOrPresent
     private LocalDate birthday;
-    private List<Integer> friends;
+    private Set<Integer> friends;
 
-    public User(int id, String login, String name, String email, LocalDate birthday, List<Integer> friends) {
+    public User(int id, String login, String name, String email, LocalDate birthday, Set<Integer> friends) {
         this.id = id;
         this.login = login;
         if (name == null || name.isEmpty()) {

@@ -45,7 +45,6 @@ public class GenreStorage {
                           " WHERE film_id=?" +
                           " ORDER BY g.genre_id";
         return jdbcTemplate.query(sqlQuery, this::mapRowToFilmGenre, filmId);
-
     }
 
     private Genre mapRowToGenre(ResultSet resultSet, int rowNum) throws SQLException {
