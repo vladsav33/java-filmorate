@@ -105,13 +105,13 @@ public class FilmDbStorage implements FilmStorage {
                 "UPDATE films " +
                         "SET film_nm = ?, film_desc = ?, release_dt = ?, duration_min = ?, rating_id = ? " +
                         "WHERE film_id = ?";
-        int updatedRowsCount = jdbcTemplate.update(filmSqlQuery
-                , film.getName()
-                , film.getDescription()
-                , Date.valueOf(film.getReleaseDate())
-                , film.getDuration()
-                , film.getMpa().getId()
-                , film.getId());
+        int updatedRowsCount = jdbcTemplate.update(filmSqlQuery,
+                film.getName(),
+                film.getDescription(),
+                Date.valueOf(film.getReleaseDate()),
+                film.getDuration(),
+                film.getMpa().getId(),
+                film.getId());
 
         if (updatedRowsCount == 0) {
             log.info("Фильм с идентификатором {} не найден.", film.getId());

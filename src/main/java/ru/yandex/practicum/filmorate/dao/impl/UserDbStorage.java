@@ -84,12 +84,12 @@ public class UserDbStorage implements UserStorage {
                 "UPDATE users " +
                         "SET email_txt = ?, login_nm = ?, user_nm = ?, birth_dt = ? " +
                         "WHERE user_id = ?";
-        int updatedRowsCount = jdbcTemplate.update(userSqlQuery
-                , user.getEmail()
-                , user.getLogin()
-                , user.getName()
-                , user.getBirthday()
-                , user.getId());
+        int updatedRowsCount = jdbcTemplate.update(userSqlQuery,
+                user.getEmail(),
+                user.getLogin(),
+                user.getName(),
+                user.getBirthday(),
+                user.getId());
 
         if (updatedRowsCount == 0) {
             log.info("Пользователь с идентификатором {} не найден.", user.getId());
