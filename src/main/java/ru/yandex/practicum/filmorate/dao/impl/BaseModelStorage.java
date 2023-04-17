@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-@Deprecated
 @Component("baseModelStorage")
 @Slf4j
 public abstract class BaseModelStorage<T extends BaseModel> {

@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
@@ -12,6 +13,7 @@ import java.util.Set;
 
 @Data
 @Builder
+@AllArgsConstructor
 public class User extends BaseModel {
     //целочисленный идентификатор — id;
     //электронная почта — email;

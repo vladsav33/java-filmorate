@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -7,9 +8,9 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.dao.FilmStorage;
 import ru.yandex.practicum.filmorate.dao.UserStorage;
+import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -20,7 +21,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FilmService {
 
+    @Qualifier("filmDbStorage")
+    @NonNull
     private final FilmStorage filmStorage;
+    @Qualifier("userDbStorage")
+    @NonNull
     private final UserStorage userStorage;
 
     public Collection<Film> findAll() {
@@ -46,17 +51,19 @@ public class FilmService {
 
     public void addLike(int filmId, int userId) {
         Film film = checkFilmId(filmId);
-        checkUserId(userId);
+        User user = checkUserId(userId);
 
-        film.getLikes().add(userId);
+        filmStorage.addLike(film, user);
+
         log.debug("Добавлен лайк от пользователя ID = {} в фильм: {}", userId, film);
     }
 
     public void removeLike(int filmId, int userId) {
         Film film = checkFilmId(filmId);
-        checkUserId(userId);
+        User user = checkUserId(userId);
 
-        film.getLikes().remove(userId);
+        filmStorage.removeLike(film, user);
+
         log.debug("Удален лайк от пользователя ID = {} в фильме: {}", userId, film);
     }
 

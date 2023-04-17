@@ -1,6 +1,7 @@
 package ru.yandex.practicum.filmorate.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
@@ -12,6 +13,7 @@ import java.util.Set;
 
 @Data
 @Builder
+@AllArgsConstructor
 public class Film extends BaseModel {
     //целочисленный идентификатор — id;
     //название — name;
@@ -27,4 +29,6 @@ public class Film extends BaseModel {
     private int duration;
     @JsonIgnore
     private Set<Integer> likes;
+    private Set<Genre> genres;
+    private MPA mpa;
 }

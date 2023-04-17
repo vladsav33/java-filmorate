@@ -5,9 +5,7 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public abstract class BaseModel {
+public class Genre {
     private int id;
-
-    BaseModel() {
-    }
+    private String name;
 }

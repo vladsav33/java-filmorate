@@ -14,4 +14,8 @@ public interface UserStorage {
     public User create(User user);
 
     public Optional<User> update(User user);
+
+    public void addFriend(User user, User friend);
+
+    public void removeFriend(User user, User friend);
 }
