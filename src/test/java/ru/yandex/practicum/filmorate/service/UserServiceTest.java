@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.dao.impl.InMemoryUserStorage;
 import ru.yandex.practicum.filmorate.dao.UserStorage;
 
 import java.time.LocalDate;
@@ -18,9 +17,9 @@ import static org.mockito.Mockito.*;
 class UserServiceTest {
 
 
-    private final UserStorage inMemoryUserStorage = Mockito.mock(InMemoryUserStorage.class);
+    private final UserStorage userStorage = Mockito.mock(UserStorage.class);
 
-    private final UserService userService = new UserService(inMemoryUserStorage);
+    private final UserService userService = new UserService(userStorage);
 
     private User user = User.builder()
             .email("test1@test.test")
@@ -49,98 +48,165 @@ class UserServiceTest {
 
     @Test
     void addFriendWhenUserIsNull() {
-        when(inMemoryUserStorage.getById(userId)).thenReturn(Optional.empty());
-        when(inMemoryUserStorage.getById(otherUserId)).thenReturn(Optional.of(otherUser));
+        when(userStorage.getById(userId)).thenReturn(Optional.empty());
+        when(userStorage.getById(otherUserId)).thenReturn(Optional.of(otherUser));
 
         UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.addFriend(userId, otherUserId));
-        verify(inMemoryUserStorage).getById(userId);
+        verify(userStorage).getById(userId);
         assertEquals(exception.getMessage(), "Пользователь с ID = " + userId + " не найден.");
     }
 
     @Test
     void addFriendWhenOtherUserIsNull() {
-        when(inMemoryUserStorage.getById(userId)).thenReturn(Optional.of(user));
-        when(inMemoryUserStorage.getById(otherUserId)).thenReturn(Optional.empty());
+        when(userStorage.getById(userId)).thenReturn(Optional.of(user));
+        when(userStorage.getById(otherUserId)).thenReturn(Optional.empty());
 
         UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.addFriend(userId, otherUserId));
-        verify(inMemoryUserStorage).getById(userId);
-        verify(inMemoryUserStorage).getById(otherUserId);
+        verify(userStorage).getById(userId);
+        verify(userStorage).getById(otherUserId);
         assertEquals(exception.getMessage(), "Пользователь с ID = " + otherUserId + " не найден.");
     }
 
     @Test
     void addFriend() {
-        when(inMemoryUserStorage.getById(userId)).thenReturn(Optional.of(user));
-        when(inMemoryUserStorage.getById(otherUserId)).thenReturn(Optional.of(otherUser));
+        when(userStorage.getById(userId)).thenReturn(Optional.of(user));
+        when(userStorage.getById(otherUserId)).thenReturn(Optional.of(otherUser));
 
         userService.addFriend(userId, otherUserId);
 
-        verify(inMemoryUserStorage).getById(userId);
-        verify(inMemoryUserStorage).getById(otherUserId);
-        assertEquals(1, user.getFriends().size());
-        assertEquals(Set.of(otherUserId), user.getFriends());
+        verify(userStorage).getById(userId);
+        verify(userStorage).getById(otherUserId);
+        verify(userStorage).addFriend(user, otherUser);
     }
 
     @Test
     void removeFriendWhenUserIsNull() {
-        when(inMemoryUserStorage.getById(userId)).thenReturn(Optional.empty());
-        when(inMemoryUserStorage.getById(otherUserId)).thenReturn(Optional.of(otherUser));
+        when(userStorage.getById(userId)).thenReturn(Optional.empty());
+        when(userStorage.getById(otherUserId)).thenReturn(Optional.of(otherUser));
 
         UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.removeFriend(userId, otherUserId));
-        verify(inMemoryUserStorage).getById(userId);
+        verify(userStorage).getById(userId);
         assertEquals(exception.getMessage(), "Пользователь с ID = " + userId + " не найден.");
     }
 
     @Test
     void removeFriendWhenOtherUserIsNull() {
-        when(inMemoryUserStorage.getById(userId)).thenReturn(Optional.of(user));
-        when(inMemoryUserStorage.getById(otherUserId)).thenReturn(Optional.empty());
+        when(userStorage.getById(userId)).thenReturn(Optional.of(user));
+        when(userStorage.getById(otherUserId)).thenReturn(Optional.empty());
 
         UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> userService.removeFriend(userId, otherUserId));
-        verify(inMemoryUserStorage).getById(userId);
-        verify(inMemoryUserStorage).getById(otherUserId);
+        verify(userStorage).getById(userId);
+        verify(userStorage).getById(otherUserId);
         assertEquals(exception.getMessage(), "Пользователь с ID = " + otherUserId + " не найден.");
     }
 
     @Test
     void removeFriendWhenZeroFriends() {
-        when(inMemoryUserStorage.getById(userId)).thenReturn(Optional.of(user));
-        when(inMemoryUserStorage.getById(otherUserId)).thenReturn(Optional.of(otherUser));
+        when(userStorage.getById(userId)).thenReturn(Optional.of(user));
+        when(userStorage.getById(otherUserId)).thenReturn(Optional.of(otherUser));
 
         userService.removeFriend(userId, otherUserId);
 
-        verify(inMemoryUserStorage).getById(userId);
-        verify(inMemoryUserStorage).getById(otherUserId);
+        verify(userStorage).getById(userId);
+        verify(userStorage).getById(otherUserId);
         assertEquals(0, user.getFriends().size());
     }
 
     @Test
     void removeFriend() {
         user.getFriends().add(otherUserId);
-        when(inMemoryUserStorage.getById(userId)).thenReturn(Optional.of(user));
-        when(inMemoryUserStorage.getById(otherUserId)).thenReturn(Optional.of(otherUser));
+        when(userStorage.getById(userId)).thenReturn(Optional.of(user));
+        when(userStorage.getById(otherUserId)).thenReturn(Optional.of(otherUser));
 
         userService.removeFriend(userId, otherUserId);
 
-        verify(inMemoryUserStorage).getById(userId);
-        verify(inMemoryUserStorage).getById(otherUserId);
-        assertEquals(0, user.getFriends().size());
+        verify(userStorage).getById(userId);
+        verify(userStorage).getById(otherUserId);
+        verify(userStorage).removeFriend(user, otherUser);
     }
 
     @Test
     void getCommonFriends() {
         user.getFriends().add(commonFriendId);
         otherUser.setFriends(Set.of(commonFriendId, otherFriendId));
-        when(inMemoryUserStorage.getById(userId)).thenReturn(Optional.of(user));
-        when(inMemoryUserStorage.getById(otherUserId)).thenReturn(Optional.of(otherUser));
-        when(inMemoryUserStorage.getById(commonFriendId)).thenReturn(Optional.of(user));
+        when(userStorage.getById(userId)).thenReturn(Optional.of(user));
+        when(userStorage.getById(otherUserId)).thenReturn(Optional.of(otherUser));
+        when(userStorage.getById(commonFriendId)).thenReturn(Optional.of(user));
 
         Collection<User> commonFriends = userService.getCommonFriends(userId, otherUserId);
 
-        verify(inMemoryUserStorage).getById(userId);
-        verify(inMemoryUserStorage).getById(commonFriendId);
-        verify(inMemoryUserStorage, never()).getById(otherFriendId);
+        verify(userStorage).getById(userId);
+        verify(userStorage).getById(commonFriendId);
+        verify(userStorage, never()).getById(otherFriendId);
         assertEquals(1, commonFriends.size());
         assertEquals(List.of(user), commonFriends);
+    }
+
+    @Test
+    public void testFindAll() {
+        when(userStorage.get()).thenReturn(List.of(user, otherUser));
+
+        Collection<User> result = userService.findAll();
+
+        assertEquals(2, result.size());
+        assertEquals(List.of(user, otherUser), result);
+        verify(userStorage, times(1)).get();
+    }
+
+    @Test
+    public void testFindById() {
+        int userId = 1;
+        when(userStorage.getById(userId)).thenReturn(Optional.of(user));
+
+        User result = userService.findById(userId);
+
+        assertEquals(user, result);
+        verify(userStorage, times(1)).getById(userId);
+    }
+
+    @Test
+    public void testFindByIdNotFound() {
+        int userId = 3;
+        when(userStorage.getById(userId)).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> userService.findById(userId));
+    }
+
+    @Test
+    public void testCreateUser() {
+        when(userStorage.create(user)).thenReturn(user);
+
+        User result = userService.createUser(user);
+
+        assertEquals(user, result);
+        verify(userStorage, times(1)).create(user);
+    }
+
+    @Test
+    public void testUpdateUser() {
+        when(userStorage.update(user)).thenReturn(Optional.of(user));
+
+        User result = userService.updateUser(user);
+
+        assertEquals(user, result);
+        verify(userStorage, times(1)).update(user);
+    }
+
+    @Test
+    public void testUpdateUserNotFound() {
+        when(userStorage.update(user)).thenReturn(Optional.empty());
+
+        assertThrows(UserNotFoundException.class, () -> userService.updateUser(user));
+    }
+
+
+    @Test
+    public void testGetFriends() {
+        when(userStorage.getById(userId)).thenReturn(Optional.of(user));
+
+        Collection<User> friends = userService.getFriends(userId);
+
+        verify(userStorage).getById(userId);
+        assertEquals(0, friends.size());
     }
 }

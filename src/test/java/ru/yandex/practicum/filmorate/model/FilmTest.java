@@ -50,7 +50,7 @@ class FilmTest {
     void validateWrongDescription() {
         Film film = Film.builder()
                 .name("name")
-                .description("desc".repeat(100))
+                .description("desc" .repeat(100))
                 .releaseDate(LocalDate.of(2000, 1, 1))
                 .duration(100)
                 .build();
