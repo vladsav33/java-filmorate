@@ -182,14 +182,13 @@ public class FilmDbStorage implements FilmStorage {
                 "SELECT genre_id " +
                         "FROM film_x_genre " +
                         "WHERE film_id = ?";
-        List<Integer> genreIds = jdbcTemplate.queryForList(sqlQuery, Integer.class, filmId);
 
-        Set<Genre> genres = genreIds.stream()
+        return jdbcTemplate.queryForList(sqlQuery, Integer.class, filmId)
+                .stream()
                 .map(genreStorage::getById)
                 .filter(Optional::isPresent)
                 .map(Optional::get)
                 .collect(Collectors.toSet());
-        return genres;
     }
 
     private Set<Integer> getLikesByFilmId(int filmId) {
