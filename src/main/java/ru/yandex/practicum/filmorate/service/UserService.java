@@ -4,7 +4,9 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.UserAlreadyHasFriendException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.dao.UserStorage;
@@ -56,7 +58,11 @@ public class UserService {
         User user = checkUserId(userId);
         User friend = checkUserId(friendId);
 
-        userStorage.addFriend(user, friend);
+        try {
+            userStorage.addFriend(user, friend);
+        } catch (DataIntegrityViolationException e) {
+            throw new UserAlreadyHasFriendException("У пользователя ID = " + userId + " уже есть друг с ID = " + friendId);
+        }
 
         log.debug("Добавлен в друзья пользователь ID = {} пользователю: {}", friendId, user);
     }

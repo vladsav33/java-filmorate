@@ -4,7 +4,9 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.exception.FilmAlreadyLikedException;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
@@ -53,7 +55,13 @@ public class FilmService {
         Film film = checkFilmId(filmId);
         User user = checkUserId(userId);
 
-        filmStorage.addLike(film, user);
+        try {
+            filmStorage.addLike(film, user);
+        } catch (DataIntegrityViolationException e) {
+            throw new FilmAlreadyLikedException("Лайк от пользователя ID = " + userId + " для фильма ID = " +
+                    film.getId() + " уже существует");
+        }
+
 
         log.debug("Добавлен лайк от пользователя ID = {} в фильм: {}", userId, film);
     }
