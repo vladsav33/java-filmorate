@@ -105,7 +105,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public void addFriend(User user, User friend) {
         String sqlQuery =
-                "INSERT INTO friends (user_id, friend_user_id) " +
+                "MERGE INTO friends (user_id, friend_user_id) " +
                         "VALUES (?, ?)";
         jdbcTemplate.update(sqlQuery, user.getId(), friend.getId());
     }

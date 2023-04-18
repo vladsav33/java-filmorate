@@ -42,20 +42,8 @@ public class ErrorHandler {
 
     @ExceptionHandler()
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleFilmAlreadyLiked(final FilmAlreadyLikedException e) {
-        return new ErrorResponse("У фильма уже есть лайк от пользователя", e.getMessage());
-    }
-
-    @ExceptionHandler()
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIncorrectParameter(final UserValidationException e) {
         return new ErrorResponse("Ошибка в заполнении полей пользователя", e.getMessage());
-    }
-
-    @ExceptionHandler()
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleUserAlreadyHasFriend(final UserAlreadyHasFriendException e) {
-        return new ErrorResponse("У пользователя уже есть такой друг", e.getMessage());
     }
 
     @ExceptionHandler()
