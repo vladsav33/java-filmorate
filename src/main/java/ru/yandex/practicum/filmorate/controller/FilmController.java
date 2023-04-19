@@ -30,7 +30,7 @@ public class FilmController {
 
     @GetMapping("/{filmId}")
     public Film findById(@PathVariable int filmId) {
-        log.info("Вывести пользователя ID = {}", filmId);
+        log.info("Вывести фильм ID = {}", filmId);
         return filmService.findById(filmId);
     }
 

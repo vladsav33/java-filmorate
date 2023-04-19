@@ -1,11 +1,13 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.storage.UserStorage;
+import ru.yandex.practicum.filmorate.dao.UserStorage;
 
 import java.util.Collection;
 import java.util.HashSet;
@@ -16,6 +18,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Slf4j
 public class UserService {
+    @Qualifier("userDbStorage")
+    @NonNull
     private final UserStorage userStorage;
 
     public Collection<User> findAll() {
@@ -52,8 +56,8 @@ public class UserService {
         User user = checkUserId(userId);
         User friend = checkUserId(friendId);
 
-        user.getFriends().add(friendId);
-        friend.getFriends().add(userId);
+        userStorage.addFriend(user, friend);
+
         log.debug("Добавлен в друзья пользователь ID = {} пользователю: {}", friendId, user);
     }
 
@@ -61,8 +65,8 @@ public class UserService {
         User user = checkUserId(userId);
         User friend = checkUserId(friendId);
 
-        user.getFriends().remove(friendId);
-        friend.getFriends().remove(userId);
+        userStorage.removeFriend(user, friend);
+
         log.debug("Удален из друзей пользователь ID = {} у пользователя: {}", friendId, user);
     }
 

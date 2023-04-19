@@ -7,17 +7,19 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.service.ValidateService;
+import ru.yandex.practicum.filmorate.service.*;
 
 import java.time.LocalDate;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest
@@ -29,6 +31,10 @@ class UserControllerTest {
     private ValidateService validateService;
     @MockBean
     private FilmService filmService;
+    @MockBean
+    private MPAService mpaService;
+    @MockBean
+    private GenreService genreService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -37,7 +43,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
-    void getUsers() {
+    void testGetUsers() {
         User userToCreate = User.builder()
                 .email("test@test.test")
                 .login("login")
@@ -59,7 +65,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
-    void createValidUser() {
+    void testCreateValidUser() {
         User userToCreate = User.builder()
                 .email("test@test.test")
                 .login("login")
@@ -82,7 +88,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
-    void createInValidUser() {
+    void testCreateInValidUser() {
         User userToCreate = User.builder().build();
         when(userService.createUser(userToCreate)).thenReturn(userToCreate);
 
@@ -96,7 +102,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
-    void updateValidUser() {
+    void testUpdateValidUser() {
         User userToUpdate = User.builder()
                 .email("test@test.test")
                 .login("login")
@@ -119,7 +125,7 @@ class UserControllerTest {
 
     @SneakyThrows
     @Test
-    void updateInValidUser() {
+    void testUpdateInValidUser() {
         User userToUpdate = User.builder().build();
         when(userService.updateUser(userToUpdate)).thenReturn(userToUpdate);
 
@@ -130,4 +136,76 @@ class UserControllerTest {
 
         verify(userService, never()).updateUser(any());
     }
+
+    @Test
+    @SneakyThrows
+    public void testFindById() {
+        int userId = 1;
+        User user = User.builder().build();
+        user.setId(userId);
+
+        when(userService.findById(userId)).thenReturn(user);
+
+        mockMvc.perform(get("/users/" + userId))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.id").value(userId));
+    }
+
+    @Test
+    @SneakyThrows
+    public void testFindByIdNotFound() {
+        int userId = 1;
+
+        when(userService.findById(userId)).thenThrow(new UserNotFoundException(String.format("Пользователь с ID = %d не найден.", userId)));
+
+        mockMvc.perform(get("/users/" + userId))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void testGetFriends() throws Exception {
+        int userId = 1;
+
+        when(userService.getFriends(userId)).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/users/" + userId + "/friends"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+        verify(userService, times(1)).getFriends(userId);
+    }
+
+    @Test
+    public void testGetCommonFriends() throws Exception {
+        int userId1 = 1;
+        int userId2 = 2;
+        when(userService.getCommonFriends(userId1, userId2)).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/users/" + userId1 + "/friends/common/" + userId2))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+
+        verify(userService).getCommonFriends(userId1, userId2);
+    }
+
+    @Test
+    @SneakyThrows
+    public void testAddFriend() {
+        int userId1 = 1;
+        int userId2 = 2;
+        mockMvc.perform(put("/users/" + userId1 + "/friends/" + userId2))
+                .andExpect(status().isOk());
+
+        verify(userService).addFriend(userId1, userId2);
+    }
+
+    @Test
+    public void testRemoveFriend() throws Exception {
+        int userId1 = 1;
+        int userId2 = 2;
+        mockMvc.perform(delete("/users/" + userId1 + "/friends/" + userId2))
+                .andExpect(status().isOk());
+
+        verify(userService).removeFriend(userId1, userId2);
+    }
+
 }
