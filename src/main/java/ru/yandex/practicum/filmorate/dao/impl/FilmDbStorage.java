@@ -33,7 +33,7 @@ public class FilmDbStorage implements FilmStorage {
     public Collection<Film> get() {
         String sqlQuery =
                 "SELECT *" +
-                        "FROM films";
+                        "FROM film";
 
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs));
     }
@@ -42,7 +42,7 @@ public class FilmDbStorage implements FilmStorage {
     public Optional<Film> getById(int id) {
         String sqlQuery =
                 "SELECT * " +
-                        "FROM films " +
+                        "FROM film " +
                         "WHERE film_id = ?";
         List<Film> films = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), id);
 
@@ -58,7 +58,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Film create(Film film) {
         String filmSqlQuery =
-                "INSERT INTO films (film_nm, film_desc, release_dt, duration_min, rating_id) " +
+                "INSERT INTO film (name, description, release_dt, duration, rating_id) " +
                         "VALUES (?, ?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         int updatedRowsCount = jdbcTemplate.update(connection -> {
@@ -102,8 +102,8 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public Optional<Film> update(Film film) {
         String filmSqlQuery =
-                "UPDATE films " +
-                        "SET film_nm = ?, film_desc = ?, release_dt = ?, duration_min = ?, rating_id = ? " +
+                "UPDATE film " +
+                        "SET name = ?, description = ?, release_dt = ?, duration = ?, rating_id = ? " +
                         "WHERE film_id = ?";
         int updatedRowsCount = jdbcTemplate.update(filmSqlQuery,
                 film.getName(),
@@ -148,7 +148,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public void addLike(Film film, User user) {
         String sqlQuery =
-                "MERGE INTO likes (film_id, user_id) " +
+                "MERGE INTO film_like (film_id, user_id) " +
                         "VALUES (?, ?)";
         jdbcTemplate.update(sqlQuery, film.getId(), user.getId());
     }
@@ -156,7 +156,7 @@ public class FilmDbStorage implements FilmStorage {
     @Override
     public void removeLike(Film film, User user) {
         String sqlQuery =
-                "DELETE FROM likes " +
+                "DELETE FROM film_like " +
                         "WHERE film_id = ? AND user_id = ?";
 
         jdbcTemplate.update(sqlQuery, film.getId(), user.getId());
@@ -165,10 +165,10 @@ public class FilmDbStorage implements FilmStorage {
     private Film makeFilm(ResultSet rs) throws SQLException {
         int filmId = rs.getInt("film_id");
         Film film = Film.builder()
-                .name(rs.getString("film_nm"))
-                .description(rs.getString("film_desc"))
+                .name(rs.getString("name"))
+                .description(rs.getString("description"))
                 .releaseDate(rs.getDate("release_dt").toLocalDate())
-                .duration(rs.getInt("duration_min"))
+                .duration(rs.getInt("duration"))
                 .mpa(mpaStorage.getById(rs.getInt("rating_id")).orElseGet(null))
                 .genres(getGenresByFilmId(filmId))
                 .likes(getLikesByFilmId(filmId))
@@ -194,7 +194,7 @@ public class FilmDbStorage implements FilmStorage {
     private Set<Integer> getLikesByFilmId(int filmId) {
         String sqlQuery =
                 "SELECT user_id " +
-                        "FROM likes " +
+                        "FROM film_like " +
                         "WHERE film_id = ?";
         List<Integer> likes = jdbcTemplate.queryForList(sqlQuery, Integer.class, filmId);
         return new HashSet<>(likes);
