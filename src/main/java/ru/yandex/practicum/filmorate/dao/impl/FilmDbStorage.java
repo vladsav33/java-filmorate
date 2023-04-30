@@ -154,6 +154,7 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(queryFilmSelect, (rs, rowNum) -> makeFilm(rs), directorId);
     }
 
+    @Override
     public Collection<Film> getPopularByGenreAndYear(int count, int genreId, int year) {
         List<Film> films;
         String sqlQuery;
@@ -189,12 +190,34 @@ public class FilmDbStorage implements FilmStorage {
         return films;
     }
 
+    @Override
     public void removeFilm(int filmId) {
         String sqlQuery =
                 "DELETE FROM film " +
                         "WHERE film_id = ?";
 
         jdbcTemplate.update(sqlQuery, filmId);
+    }
+
+    @Override
+    public Collection<Film> getCommonFilms(int userId, int friendId) {
+        String sqlQuery =
+                "SELECT film_id " +
+                        "FROM film_like " +
+                        "WHERE user_id = ? " +
+                        "INTERSECT " +
+                        "SELECT film_id " +
+                        "FROM film_like " +
+                        "WHERE user_id = ?";
+        return jdbcTemplate.queryForList(sqlQuery,
+                        Integer.class,
+                        userId,
+                        friendId)
+                .stream()
+                .map(this::getById)
+                .filter(Optional::isPresent)
+                .map(Optional::get)
+                .collect(Collectors.toList());
     }
 
     private Film makeFilm(ResultSet rs) throws SQLException {

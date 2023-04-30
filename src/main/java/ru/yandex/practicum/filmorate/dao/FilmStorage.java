@@ -25,4 +25,6 @@ public interface FilmStorage {
     public Collection<Film> getPopularByGenreAndYear(int count, int genreId, int year);
 
     public void removeFilm(int filmId);
+
+    public Collection<Film> getCommonFilms(int userId, int friendId);
 }
