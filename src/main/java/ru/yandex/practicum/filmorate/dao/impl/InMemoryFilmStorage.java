@@ -7,6 +7,8 @@ import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
 
+import java.util.Collection;
+
 @Component("inMemoryFilmStorage")
 public class InMemoryFilmStorage extends BaseModelStorage<Film> implements FilmStorage {
     @Override
@@ -26,5 +28,10 @@ public class InMemoryFilmStorage extends BaseModelStorage<Film> implements FilmS
 
     @Deprecated
     public void removeFilm(int filmId) {
+    }
+
+    @Deprecated
+    public Collection<Film> getPopularByGenreAndYear(int count, int genreId, int year) {
+        return null;
     }
 }
