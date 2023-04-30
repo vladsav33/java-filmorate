@@ -11,6 +11,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.enums.ActionType;
+import ru.yandex.practicum.filmorate.enums.EventType;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.*;
 
@@ -34,6 +36,8 @@ class FilmControllerTest {
     private FilmService filmService;
     @MockBean
     private ValidateService validateService;
+    @MockBean
+    private EventService eventService;
     @MockBean
     private UserService userService;
     @MockBean
@@ -151,6 +155,7 @@ class FilmControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.put("/films/" + filmId + "/like/" + userId))
                 .andExpect(status().isOk());
         verify(filmService, times(1)).addLike(filmId, userId);
+        verify(eventService, times(1)).createEvent(userId, ActionType.ADD, EventType.LIKE, filmId);
     }
 
     @Test
@@ -162,6 +167,7 @@ class FilmControllerTest {
         mockMvc.perform(MockMvcRequestBuilders.delete("/films/" + filmId + "/like/" + userId))
                 .andExpect(status().isOk());
         verify(filmService, times(1)).removeLike(filmId, userId);
+        verify(eventService, times(1)).createEvent(userId, ActionType.REMOVE, EventType.LIKE, filmId);
     }
 
     @Test
