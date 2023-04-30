@@ -201,6 +201,15 @@ public class FilmDbStorageTest {
         assertEquals(2, films.size());
     }
 
+    @Test
+    public void testGetFilmRecommendations() {
+        Film expectedFilm = filmDbStorage.getById(2).get();
+        Collection<Film> films = filmDbStorage.getFilmRecommendations(3);
+        Film actualFilm = films.iterator().next();
+
+        assertEquals(1, films.size());
+        assertEquals(expectedFilm, actualFilm);
+    }
 
     @Test
     void getFilmsByDirector() {
