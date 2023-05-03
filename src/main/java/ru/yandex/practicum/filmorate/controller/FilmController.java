@@ -24,6 +24,7 @@ import ru.yandex.practicum.filmorate.service.ValidateService;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -34,6 +35,13 @@ public class FilmController {
     private final FilmService filmService;
     private final ValidateService validateService;
     private final EventService eventService;
+
+    @GetMapping("/search")
+    public Collection<Film> search(@RequestParam(name = "query", defaultValue = "") String query,
+                                   @RequestParam(name = "by", defaultValue = "") List<String> by) {
+        log.info("Вывести фильмы, содержащие подстроку \"" + query + "\" в полях: " + by);
+        return filmService.searchFilms(query, by.contains("director"), by.contains("title"));
+    }
 
     @GetMapping
     public Collection<Film> findAll() {

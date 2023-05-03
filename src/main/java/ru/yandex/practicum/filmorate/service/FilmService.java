@@ -38,6 +38,13 @@ public class FilmService {
         return filmStorage.get();
     }
 
+    public Collection<Film> searchFilms(String query, Boolean director, Boolean film) {
+        return filmStorage.search(query, director, film)
+                .stream()
+                .sorted(this::compare)
+                .collect(Collectors.toList());
+    }
+
     public Film findById(int filmId) {
         return checkFilmId(filmId);
     }

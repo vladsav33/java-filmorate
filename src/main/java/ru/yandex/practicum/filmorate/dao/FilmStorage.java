@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface FilmStorage {
-    public Collection<Film> get();
+    Collection<Film> get();
+
+    Collection<Film> search(String query, Boolean director, Boolean film);
 
     public Optional<Film> getById(int id);
 
