@@ -4,14 +4,15 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
-import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.dao.FilmStorage;
 import ru.yandex.practicum.filmorate.dao.UserStorage;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,7 +23,11 @@ public class UserService {
     @NonNull
     private final UserStorage userStorage;
 
-    public Collection<User> findAll() {
+    @Qualifier("filmDbStorage")
+    @NonNull
+    private final FilmStorage filmStorage;
+
+    public List<User> findAll() {
         return userStorage.get();
     }
 
@@ -30,7 +35,7 @@ public class UserService {
         return checkUserId(userId);
     }
 
-    public Collection<User> getFriends(int userId) {
+    public List<User> getFriends(int userId) {
         User user = checkUserId(userId);
         Set<Integer> friendIds = user.getFriends();
 
@@ -70,7 +75,7 @@ public class UserService {
         log.debug("Удален из друзей пользователь ID = {} у пользователя: {}", friendId, user);
     }
 
-    public Collection<User> getCommonFriends(int userId, int otherUserId) {
+    public List<User> getCommonFriends(int userId, int otherUserId) {
         User user = checkUserId(userId);
         User otherUser = checkUserId(otherUserId);
 
@@ -82,6 +87,24 @@ public class UserService {
         return commonFriendIds.stream()
                 .map(this::checkUserId)
                 .collect(Collectors.toList());
+    }
+
+    public void removeUser(int userId) {
+        User user = checkUserId(userId);
+
+        userStorage.removeUser(userId);
+
+        log.debug("Удален пользователь {}", user);
+    }
+
+    public List<Film> getFilmRecommendations(int userId) {
+        checkUserId(userId);
+        try {
+            return filmStorage.getFilmRecommendations(userId);
+        } catch (EmptyResultDataAccessException e) {
+            log.info("Рекомедации по фильмам для пользователя с ID = {} отсутствуют", userId);
+            return Collections.emptyList();
+        }
     }
 
     private User checkUserId(int id) {
