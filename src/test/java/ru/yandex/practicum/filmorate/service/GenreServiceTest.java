@@ -8,7 +8,6 @@ import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -24,7 +23,7 @@ public class GenreServiceTest {
 
     @Test
     public void testFindAll() {
-        List<Genre> genres = Arrays.asList(
+        Collection<Genre> genres = Arrays.asList(
                 new Genre(1, "Комедия"),
                 new Genre(2, "Драма")
         );
