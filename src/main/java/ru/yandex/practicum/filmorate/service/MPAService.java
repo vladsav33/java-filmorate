@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.dao.MPAStorage;
 import ru.yandex.practicum.filmorate.exception.MPANotFoundException;
 import ru.yandex.practicum.filmorate.model.MPA;
 
-import java.util.List;
+import java.util.Collection;
 
 @Service
 @RequiredArgsConstructor
@@ -15,7 +15,7 @@ public class MPAService {
     @Qualifier("mpaDbStorage")
     private final MPAStorage mpaStorage;
 
-    public List<MPA> findAll() {
+    public Collection<MPA> findAll() {
         return mpaStorage.get();
     }
 

@@ -2,13 +2,13 @@ package ru.yandex.practicum.filmorate.dao;
 
 import ru.yandex.practicum.filmorate.model.MPA;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
 public interface MPAStorage {
 
-    List<MPA> get();
+    public Collection<MPA> get();
 
-    Optional<MPA> getById(int id);
+    public Optional<MPA> getById(int id);
 
 }

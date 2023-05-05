@@ -2,12 +2,12 @@ package ru.yandex.practicum.filmorate.dao;
 
 import ru.yandex.practicum.filmorate.model.Genre;
 
-import java.util.List;
+import java.util.Collection;
 import java.util.Optional;
 
 public interface GenreStorage {
 
-    List<Genre> get();
+    public Collection<Genre> get();
 
-    Optional<Genre> getById(int id);
+    public Optional<Genre> getById(int id);
 }

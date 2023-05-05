@@ -7,7 +7,7 @@ import ru.yandex.practicum.filmorate.dao.GenreStorage;
 import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
 import ru.yandex.practicum.filmorate.model.Genre;
 
-import java.util.List;
+import java.util.Collection;
 
 @Service
 @RequiredArgsConstructor
@@ -16,7 +16,7 @@ public class GenreService {
     @Qualifier("genreDbStorage")
     private final GenreStorage genreStorage;
 
-    public List<Genre> findAll() {
+    public Collection<Genre> findAll() {
         return genreStorage.get();
     }
 
