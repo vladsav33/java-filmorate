@@ -27,8 +27,8 @@ public class EventDbStorage implements EventStorage {
     public Optional<Event> getById(int id) {
         String sqlQuery =
                 "SELECT * " +
-                "FROM event " +
-                "WHERE event_id = ?";
+                        "FROM event " +
+                        "WHERE event_id = ?";
         List<Event> events = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeEvent(rs), id);
 
         // обрабатываем результат выполнения запроса
@@ -44,8 +44,8 @@ public class EventDbStorage implements EventStorage {
     public List<Event> getByUserId(int userId) {
         String sqlQuery =
                 "SELECT * " +
-                "FROM event " +
-                "WHERE user_id = ?";
+                        "FROM event " +
+                        "WHERE user_id = ?";
 
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeEvent(rs), userId);
     }
@@ -54,7 +54,7 @@ public class EventDbStorage implements EventStorage {
     public Event create(int userId, EventType eventType, ActionType actionType, long entityId) {
         String userSqlQuery =
                 "INSERT INTO event (user_id, event_type, action_type, entity_id, event_dttm) " +
-                "VALUES (?, ?, ?, ?, ?)";
+                        "VALUES (?, ?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         int updatedRowsCount = jdbcTemplate.update(connection -> {
@@ -67,7 +67,7 @@ public class EventDbStorage implements EventStorage {
             return stmt;
         }, keyHolder);
 
-        if (updatedRowsCount == 0 || keyHolder.getKey() == null ) {
+        if (updatedRowsCount == 0 || keyHolder.getKey() == null) {
             log.info("Произошла ошибка при добавлении события для пользователя {} в базу данных", userId);
             return null;
         }

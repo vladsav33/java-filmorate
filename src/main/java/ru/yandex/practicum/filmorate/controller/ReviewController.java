@@ -3,11 +3,10 @@ package ru.yandex.practicum.filmorate.controller;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.NotNullReviewValidationException;
 import ru.yandex.practicum.filmorate.enums.ActionType;
 import ru.yandex.practicum.filmorate.enums.EventType;
+import ru.yandex.practicum.filmorate.exception.ReviewValidationException;
 import ru.yandex.practicum.filmorate.model.Review;
 import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.ReviewService;
@@ -89,17 +88,25 @@ public class ReviewController {
         reviewService.removeLike(id, userId, false);
     }
 
-    private void generateCustomValidateException(Review review, BindingResult bindingResult)
-            throws NotNullReviewValidationException {
+    private void generateCustomValidateException(Review review, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            FieldError fieldError = bindingResult.getFieldError();
-            String fieldName = fieldError.getField();
-            String defaultMessage = fieldError.getDefaultMessage();
-            log.error("Ошибка в заполнении поля {} - {}. Отзыв - {}", fieldName, defaultMessage, review);
+            if (bindingResult.getFieldError() != null) {
+                String fieldName = bindingResult.getFieldError().getField();
+                String defaultMessage = bindingResult.getFieldError().getDefaultMessage();
+                log.error("Ошибка в заполнении поля {} - {}. Отзыв - {}", fieldName, defaultMessage, review);
 
-            if (defaultMessage.equals("review notnull")) {
-                throw new NotNullReviewValidationException("Поле '" + fieldName + "' не должно быть пустым");
+                if (defaultMessage != null && defaultMessage.equals("review notnull")) {
+                    throw new ReviewValidationException("Поле '" + fieldName + "' не должно быть пустым");
+                }
+
+                throw new ReviewValidationException("Ошибка в заполнении поля: " + fieldName + ". " +
+                        "Сообщение: " + defaultMessage + ". Отзыв: " + review);
             }
+
+            log.error("При добавлении/обновлении отзыва {} произошла ошибка, отличная от ошибки заполнения полей",
+                    review);
+            throw new ReviewValidationException("При добавлении/обновлении отзыва произошла ошибка, " +
+                    "отличная от ошибки заполнения полей");
         }
     }
 }

@@ -7,8 +7,8 @@ import java.util.Optional;
 
 public interface MPAStorage {
 
-    public List<MPA> get();
+    List<MPA> get();
 
-    public Optional<MPA> getById(int id);
+    Optional<MPA> getById(int id);
 
 }
