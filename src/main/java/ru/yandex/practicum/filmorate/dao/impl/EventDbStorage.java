@@ -81,7 +81,7 @@ public class EventDbStorage implements EventStorage {
     }
 
     private Event makeEvent(ResultSet rs) throws SQLException {
-        Event event = Event.builder()
+        return Event.builder()
                 .eventId(rs.getInt("event_id"))
                 .userId(rs.getInt("user_id"))
                 .eventType(EventType.valueOf(rs.getString("event_type")))
@@ -89,6 +89,5 @@ public class EventDbStorage implements EventStorage {
                 .entityId(rs.getLong("entity_id"))
                 .eventDateTime(rs.getTimestamp("event_dttm").toInstant().toEpochMilli())
                 .build();
-        return event;
     }
 }
