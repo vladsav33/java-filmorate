@@ -13,7 +13,7 @@ import java.util.List;
 public class InMemoryFilmStorage extends BaseModelStorage<Film> implements FilmStorage {
     @Override
     @Deprecated
-    public Collection<Film> search(String query, Boolean director, Boolean film) {
+    public List<Film> search(String query, Boolean director, Boolean film) {
         throw new UnsupportedOperationException("Реализация метода существует только при работе с БД");
     }
 

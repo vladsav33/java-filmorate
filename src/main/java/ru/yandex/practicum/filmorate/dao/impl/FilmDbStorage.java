@@ -46,7 +46,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> search(String query, Boolean director, Boolean film) {
+    public List<Film> search(String query, Boolean director, Boolean film) {
         StringBuilder sqlQuery = new StringBuilder();
         sqlQuery.append("SELECT * FROM film f " +
                 "LEFT JOIN film_x_director fxd ON f.film_id = fxd.film_id " +
