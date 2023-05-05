@@ -26,7 +26,7 @@ public class DirectorController {
 
     @GetMapping("/{id}")
     public Director getById(@PathVariable int id) {
-        log.info("Вывести режиссера с id = {}.");
+        log.info("Вывести режиссера с id = {}.", id);
         return directorService.getById(id);
     }
 
@@ -52,9 +52,17 @@ public class DirectorController {
 
     private void generateCustomValidateException(Director director, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
-            log.warn("Ошибка в заполнении поля {} - {}. Режиссер - {}", bindingResult.getFieldError().getField(),
-                    bindingResult.getFieldError().getDefaultMessage(), director);
-            throw new DirectorValidationException("Ошибка в заполнении поля " + bindingResult.getFieldError().getField());
+            if (bindingResult.getFieldError() != null) {
+                log.warn("Ошибка в заполнении поля {} - {}. Режиссер - {}", bindingResult.getFieldError().getField(),
+                        bindingResult.getFieldError().getDefaultMessage(), director);
+                throw new DirectorValidationException("Ошибка в заполнении поля "
+                        + bindingResult.getFieldError().getField());
+            } else {
+                log.warn("Возникла ошибка при добавлении/изменении режиссера {}, отличная от ошибки заполнения полей",
+                        director);
+                throw new DirectorValidationException(
+                        "Ошибка при добавлении/изменении режиссера, отличная от ошибки заполнения полей");
+            }
         }
     }
 }

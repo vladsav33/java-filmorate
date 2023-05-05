@@ -39,7 +39,8 @@ public class DirectorDbStorage implements DirectorStorage {
         log.info("Получение режиссера с id = {}.", id);
 
         try {
-            return Optional.of(jdbcTemplate.queryForObject(queryDirectorSelect, (rs, rowNum) -> makeDirector(rs), id));
+            return Optional.ofNullable(jdbcTemplate.queryForObject(queryDirectorSelect,
+                    (rs, rowNum) -> makeDirector(rs), id));
         } catch (RuntimeException e) {
             return Optional.empty();
         }
@@ -59,13 +60,12 @@ public class DirectorDbStorage implements DirectorStorage {
             return stmt;
         }, keyHolder);
 
-        if (updatedRowsCount == 0) {
+        if (updatedRowsCount == 0 || keyHolder.getKey() == null) {
             log.info("Произошла ошибка при добавлении режиссера {} в базу данных", director);
             return null;
         }
 
         int directorId = (int) keyHolder.getKey().longValue();
-
         Director createdDirector = getById(directorId).orElse(null);
         log.info("Режиссер {} добавлен в базу данных", createdDirector);
         return createdDirector;
