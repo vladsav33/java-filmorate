@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.model.MPA;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -21,7 +22,7 @@ public class MPAServiceTest {
 
     @Test
     void testFindAll() {
-        Collection<MPA> expectedMPAs = Arrays.asList(
+        List<MPA> expectedMPAs = Arrays.asList(
                 new MPA(1, "G"),
                 new MPA(2, "PG")
         );
