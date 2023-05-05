@@ -15,7 +15,7 @@ import ru.yandex.practicum.filmorate.model.MPA;
 import ru.yandex.practicum.filmorate.service.MPAService;
 
 import java.util.Arrays;
-import java.util.List;
+import java.util.Collection;
 
 
 @WebMvcTest(MPAController.class)
@@ -32,7 +32,7 @@ class MPAControllerTest {
     @Test
     @SneakyThrows
     public void testFindAll() {
-        List<MPA> mpa = Arrays.asList(
+        Collection<MPA> mpa = Arrays.asList(
                 new MPA(1, "G"),
                 new MPA(2, "PG")
         );
