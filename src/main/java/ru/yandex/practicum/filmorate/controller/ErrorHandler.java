@@ -1,5 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -80,6 +81,12 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleUnsupportedOperationException(final UnsupportedOperationException e) {
         return new ErrorResponse("Данная функция не поддерживается", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleConversionFailedException(final ConversionFailedException e) {
+        return new ErrorResponse("Введенная строка не соответствует формату, предусмотренному для поля", e.getMessage());
     }
 
     @ExceptionHandler()

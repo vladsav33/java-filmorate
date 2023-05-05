@@ -28,8 +28,9 @@ public class InMemoryFilmStorage extends BaseModelStorage<Film> implements FilmS
     }
 
     @Override
+    @Deprecated
     public List<Film> getFilmsByDirector(int directorId) {
-        return null; // это заглушка
+        throw new UnsupportedOperationException("Реализация метода существует только при работе с БД");
     }
 
     @Override
