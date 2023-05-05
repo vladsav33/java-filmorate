@@ -24,7 +24,6 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.ValidateService;
 
 import javax.validation.Valid;
-import java.util.Collection;
 import java.util.List;
 
 @Slf4j
@@ -45,7 +44,7 @@ public class FilmController {
     }
 
     @GetMapping
-    public Collection<Film> findAll() {
+    public List<Film> findAll() {
         log.info("Вывести все фильмы");
         return filmService.findAll();
     }
@@ -57,9 +56,9 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public Collection<Film> getPopular(@RequestParam(defaultValue = "10") int count,
-                                         @RequestParam(defaultValue = "0") int genreId,
-                                         @RequestParam(defaultValue = "0") int year) {
+    public List<Film> getPopular(@RequestParam(defaultValue = "10") int count,
+                                 @RequestParam(defaultValue = "0") int genreId,
+                                 @RequestParam(defaultValue = "0") int year) {
         log.info("Вывести ТОП {} фильмов, жанр: {}, год: {}", count, genreId, year);
 
         return filmService.getTop(count, genreId, year);
@@ -103,13 +102,13 @@ public class FilmController {
     }
 
     @GetMapping("/common")
-    public Collection<Film> getCommonFilms(@RequestParam int userId,
-                                           @RequestParam int friendId) {
+    public List<Film> getCommonFilms(@RequestParam int userId,
+                                     @RequestParam int friendId) {
         return filmService.getCommonFilms(userId, friendId);
     }
 
     @GetMapping("/director/{directorId}")
-    public Collection<Film> findFilmsByDirector(@PathVariable int directorId, @RequestParam String sortBy) {
+    public List<Film> findFilmsByDirector(@PathVariable int directorId, @RequestParam String sortBy) {
         log.info("Вывести все фильмы режиссера {} с сортировкой по {}.", directorId, sortBy);
         return filmService.getFilmsByDirector(directorId, sortBy);
     }

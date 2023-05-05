@@ -12,10 +12,7 @@ import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,7 +27,7 @@ public class UserService {
     @NonNull
     private final FilmStorage filmStorage;
 
-    public Collection<User> findAll() {
+    public List<User> findAll() {
         return userStorage.get();
     }
 
@@ -38,7 +35,7 @@ public class UserService {
         return checkUserId(userId);
     }
 
-    public Collection<User> getFriends(int userId) {
+    public List<User> getFriends(int userId) {
         User user = checkUserId(userId);
         Set<Integer> friendIds = user.getFriends();
 
@@ -78,7 +75,7 @@ public class UserService {
         log.debug("Удален из друзей пользователь ID = {} у пользователя: {}", friendId, user);
     }
 
-    public Collection<User> getCommonFriends(int userId, int otherUserId) {
+    public List<User> getCommonFriends(int userId, int otherUserId) {
         User user = checkUserId(userId);
         User otherUser = checkUserId(otherUserId);
 
@@ -100,7 +97,7 @@ public class UserService {
         log.debug("Удален пользователь {}", user);
     }
 
-    public Collection<Film> getFilmRecommendations(int userId) {
+    public List<Film> getFilmRecommendations(int userId) {
         checkUserId(userId);
         try {
             return filmStorage.getFilmRecommendations(userId);

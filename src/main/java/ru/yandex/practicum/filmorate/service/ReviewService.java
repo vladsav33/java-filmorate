@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.ReviewStorage;
 import ru.yandex.practicum.filmorate.model.Review;
 
-import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -26,7 +26,7 @@ public class ReviewService {
         return reviewStorage.getById(reviewId);
     }
 
-    public Collection<Review> getFilmReviews(int filmId, int count) {
+    public List<Review> getFilmReviews(int filmId, int count) {
         if (filmId == 0) {
             return reviewStorage.getReviewsByAllFilms(count);
         }

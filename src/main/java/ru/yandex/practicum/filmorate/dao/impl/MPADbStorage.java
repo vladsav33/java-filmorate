@@ -9,7 +9,6 @@ import ru.yandex.practicum.filmorate.model.MPA;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,7 +19,7 @@ public class MPADbStorage implements MPAStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Collection<MPA> get() {
+    public List<MPA> get() {
         String sqlQuery =
                 "SELECT *" +
                         "FROM rating";

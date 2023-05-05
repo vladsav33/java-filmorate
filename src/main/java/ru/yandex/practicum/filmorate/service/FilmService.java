@@ -14,8 +14,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,7 +32,7 @@ public class FilmService {
     @NonNull
     private final DirectorService directorService;
 
-    public Collection<Film> findAll() {
+    public List<Film> findAll() {
         return filmStorage.get();
     }
 
@@ -80,12 +78,12 @@ public class FilmService {
         log.debug("Удален лайк от пользователя ID = {} в фильме: {}", userId, film);
     }
 
-    public Collection<Film> getTop(int count, int genreId, int year) {
+    public List<Film> getTop(int count, int genreId, int year) {
         log.info("Получаем список из {} популярных фильмов, жанр {}, год {}", count, genreId, year);
         return filmStorage.getPopularByGenreAndYear(count, genreId, year);
     }
 
-    public Collection<Film> getFilmsByDirector(int directorId, String sortBy) {
+    public List<Film> getFilmsByDirector(int directorId, String sortBy) {
         directorService.checkIfDirectorExists(directorId);
         checkSortByParam(sortBy);
         List<Film> films = new ArrayList<>(filmStorage.getFilmsByDirector(directorId));
@@ -114,7 +112,7 @@ public class FilmService {
         log.debug("Удален фильм: {}", film);
     }
 
-    public Collection<Film> getCommonFilms(int userId, int friendId) {
+    public List<Film> getCommonFilms(int userId, int friendId) {
         checkUserId(userId);
         checkUserId(friendId);
         return filmStorage.getCommonFilms(userId, friendId).stream()

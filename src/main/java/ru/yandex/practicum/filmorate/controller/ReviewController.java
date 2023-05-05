@@ -13,7 +13,7 @@ import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.ReviewService;
 
 import javax.validation.Valid;
-import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -31,7 +31,7 @@ public class ReviewController {
     }
 
     @GetMapping
-    public Collection<Review> getFilmReviews(@RequestParam(defaultValue = "0") int filmId, @RequestParam(defaultValue = "10") int count) {
+    public List<Review> getFilmReviews(@RequestParam(defaultValue = "0") int filmId, @RequestParam(defaultValue = "10") int count) {
         log.info("Вывести список отзывов к фильму ID = {}, в количестве {}", filmId, count);
         return reviewService.getFilmReviews(filmId, count);
     }

@@ -2,12 +2,12 @@ package ru.yandex.practicum.filmorate.dao;
 
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface UserStorage {
 
-    public Collection<User> get();
+    public List<User> get();
 
     public Optional<User> getById(int id);
 

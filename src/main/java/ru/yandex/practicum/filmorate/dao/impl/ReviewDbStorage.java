@@ -14,7 +14,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.List;
 
 @Component("reviewDbStorage")
@@ -46,7 +45,7 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public Collection<Review> getReviewsByFilmId(int filmId, int count) {
+    public List<Review> getReviewsByFilmId(int filmId, int count) {
         String sqlQuery = "SELECT r.review_id AS reviewId,\n" +
                 "\t\tr.content AS content,\n" +
                 "\t\tr.is_positive AS isPositive,\n" +
@@ -63,7 +62,7 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public Collection<Review> getReviewsByAllFilms(int count) {
+    public List<Review> getReviewsByAllFilms(int count) {
         String sqlQuery = "SELECT r.review_id AS reviewId,\n" +
                 "\t\tr.content AS content,\n" +
                 "\t\tr.is_positive AS isPositive,\n" +

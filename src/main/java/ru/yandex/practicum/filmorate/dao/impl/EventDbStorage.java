@@ -14,7 +14,6 @@ import ru.yandex.practicum.filmorate.enums.EventType;
 import java.sql.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,7 +41,7 @@ public class EventDbStorage implements EventStorage {
     }
 
     @Override
-    public Collection<Event> getByUserId(int userId) {
+    public List<Event> getByUserId(int userId) {
         String sqlQuery =
                 "SELECT * " +
                 "FROM event " +
@@ -68,7 +67,7 @@ public class EventDbStorage implements EventStorage {
             return stmt;
         }, keyHolder);
 
-        if (updatedRowsCount == 0) {
+        if (updatedRowsCount == 0 || keyHolder.getKey() == null ) {
             log.info("Произошла ошибка при добавлении события для пользователя {} в базу данных", userId);
             return null;
         }
