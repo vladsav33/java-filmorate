@@ -5,15 +5,13 @@ import ru.yandex.practicum.filmorate.dao.FilmStorage;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.Collection;
-
 import java.util.List;
 
 @Component("inMemoryFilmStorage")
 public class InMemoryFilmStorage extends BaseModelStorage<Film> implements FilmStorage {
     @Override
     @Deprecated
-    public Collection<Film> search(String query, Boolean director, Boolean film) {
+    public List<Film> search(String query, Boolean director, Boolean film) {
         throw new UnsupportedOperationException("Реализация метода существует только при работе с БД");
     }
 
@@ -28,8 +26,9 @@ public class InMemoryFilmStorage extends BaseModelStorage<Film> implements FilmS
     }
 
     @Override
+    @Deprecated
     public List<Film> getFilmsByDirector(int directorId) {
-        return null; // это заглушка
+        throw new UnsupportedOperationException("Реализация метода существует только при работе с БД");
     }
 
     @Override
@@ -40,19 +39,19 @@ public class InMemoryFilmStorage extends BaseModelStorage<Film> implements FilmS
 
     @Override
     @Deprecated
-    public Collection<Film> getPopularByGenreAndYear(int count, int genreId, int year) {
+    public List<Film> getPopularByGenreAndYear(int count, int genreId, int year) {
         throw new UnsupportedOperationException("Реализация метода существует только при работе с БД");
     }
 
     @Override
     @Deprecated
-    public Collection<Film> getFilmRecommendations(int userId) {
+    public List<Film> getFilmRecommendations(int userId) {
         throw new UnsupportedOperationException("Реализация метода существует только при работе с БД");
     }
 
     @Override
     @Deprecated
-    public Collection<Film> getCommonFilms(int userId, int friendId) {
+    public List<Film> getCommonFilms(int userId, int friendId) {
         throw new UnsupportedOperationException("Реализация метода существует только при работе с БД");
     }
 }

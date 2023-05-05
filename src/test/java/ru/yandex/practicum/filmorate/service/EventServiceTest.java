@@ -24,7 +24,7 @@ class EventServiceTest {
     @Test
     public void testFindByUserId() {
         int userId = 1;
-        Collection<Event> events = Arrays.asList(
+        List<Event> events = Arrays.asList(
                 Event.builder().eventId(1).userId(userId).build(),
                 Event.builder().eventId(2).userId(userId).build()
         );

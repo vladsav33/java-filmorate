@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.enums.ActionType;
 import ru.yandex.practicum.filmorate.enums.EventType;
+import ru.yandex.practicum.filmorate.enums.SearchCategoryType;
+import ru.yandex.practicum.filmorate.enums.SortCategoryType;
 import ru.yandex.practicum.filmorate.exception.FilmValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.EventService;
@@ -23,7 +25,6 @@ import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.ValidateService;
 
 import javax.validation.Valid;
-import java.util.Collection;
 import java.util.List;
 
 @Slf4j
@@ -37,14 +38,14 @@ public class FilmController {
     private final EventService eventService;
 
     @GetMapping("/search")
-    public Collection<Film> search(@RequestParam(name = "query", defaultValue = "") String query,
-                                   @RequestParam(name = "by", defaultValue = "") List<String> by) {
-        log.info("Вывести фильмы, содержащие подстроку \"" + query + "\" в полях: " + by);
-        return filmService.searchFilms(query, by.contains("director"), by.contains("title"));
+    public List<Film> search(@RequestParam(name = "query", defaultValue = "") String query,
+                             @RequestParam(name = "by", defaultValue = "") List<SearchCategoryType> by) {
+        log.info(String.format("Вывести фильмы, содержащие подстроку \"%s\" в полях: %s", query, by));
+        return filmService.searchFilms(query, by.contains(SearchCategoryType.DIRECTOR), by.contains(SearchCategoryType.TITLE));
     }
 
     @GetMapping
-    public Collection<Film> findAll() {
+    public List<Film> findAll() {
         log.info("Вывести все фильмы");
         return filmService.findAll();
     }
@@ -56,9 +57,9 @@ public class FilmController {
     }
 
     @GetMapping("/popular")
-    public Collection<Film> getPopular(@RequestParam(defaultValue = "10") int count,
-                                         @RequestParam(defaultValue = "0") int genreId,
-                                         @RequestParam(defaultValue = "0") int year) {
+    public List<Film> getPopular(@RequestParam(defaultValue = "10") int count,
+                                 @RequestParam(defaultValue = "0") int genreId,
+                                 @RequestParam(defaultValue = "0") int year) {
         log.info("Вывести ТОП {} фильмов, жанр: {}, год: {}", count, genreId, year);
 
         return filmService.getTop(count, genreId, year);
@@ -102,13 +103,13 @@ public class FilmController {
     }
 
     @GetMapping("/common")
-    public Collection<Film> getCommonFilms(@RequestParam int userId,
-                                           @RequestParam int friendId) {
+    public List<Film> getCommonFilms(@RequestParam int userId,
+                                     @RequestParam int friendId) {
         return filmService.getCommonFilms(userId, friendId);
     }
 
     @GetMapping("/director/{directorId}")
-    public Collection<Film> findFilmsByDirector(@PathVariable int directorId, @RequestParam String sortBy) {
+    public List<Film> findFilmsByDirector(@PathVariable int directorId, @RequestParam SortCategoryType sortBy) {
         log.info("Вывести все фильмы режиссера {} с сортировкой по {}.", directorId, sortBy);
         return filmService.getFilmsByDirector(directorId, sortBy);
     }

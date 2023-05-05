@@ -10,7 +10,7 @@ import ru.yandex.practicum.filmorate.enums.ActionType;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.enums.EventType;
 
-import java.util.Collection;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -21,7 +21,7 @@ public class EventService {
     @NonNull
     private final EventStorage eventStorage;
 
-    public Collection<Event> findByUserId(int userId) {
+    public List<Event> findByUserId(int userId) {
         return eventStorage.getByUserId(userId);
     }
 

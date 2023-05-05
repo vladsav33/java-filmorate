@@ -16,7 +16,7 @@ import ru.yandex.practicum.filmorate.service.UserService;
 import ru.yandex.practicum.filmorate.service.ValidateService;
 
 import javax.validation.Valid;
-import java.util.Collection;
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -28,7 +28,7 @@ public class UserController {
     private final EventService eventService;
 
     @GetMapping
-    public Collection<User> findAll() {
+    public List<User> findAll() {
         log.info("Вывести всех пользователей");
         return userService.findAll();
     }
@@ -40,19 +40,19 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/friends")
-    public Collection<User> getFriends(@PathVariable int userId) {
+    public List<User> getFriends(@PathVariable int userId) {
         log.info("Вывести пользователя ID = {}", userId);
         return userService.getFriends(userId);
     }
 
     @GetMapping("/{userId}/friends/common/{otherUserId}")
-    public Collection<User> getCommonFriends(@PathVariable int userId, @PathVariable int otherUserId) {
+    public List<User> getCommonFriends(@PathVariable int userId, @PathVariable int otherUserId) {
         log.info("Вывести общих друзей пользователя ID = {} и пользователя ID = {}", userId, otherUserId);
         return userService.getCommonFriends(userId, otherUserId);
     }
 
     @GetMapping("/{userId}/feed")
-    public Collection<Event> getEvents(@PathVariable int userId) {
+    public List<Event> getEvents(@PathVariable int userId) {
         log.info("Вывести информацию о действиях пользоватяля ID = {}", userId);
         //проверяем, что пользователь существует
         userService.findById(userId);
@@ -91,7 +91,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/recommendations")
-    public Collection<Film> getFilmRecommendations(@PathVariable int userId) {
+    public List<Film> getFilmRecommendations(@PathVariable int userId) {
         log.info("Получить список рекомендованных фильмов для пользователя с ID = {}", userId);
         return userService.getFilmRecommendations(userId);
     }

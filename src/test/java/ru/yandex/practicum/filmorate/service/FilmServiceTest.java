@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import ru.yandex.practicum.filmorate.dao.FilmStorage;
 import ru.yandex.practicum.filmorate.dao.UserStorage;
+import ru.yandex.practicum.filmorate.enums.SortCategoryType;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
@@ -264,7 +265,7 @@ class FilmServiceTest {
 
         when(filmStorage.getFilmsByDirector(1)).thenReturn(List.of(film2, film1));
 
-        Collection<Film> result = filmService.getFilmsByDirector(1, "likes");
+        Collection<Film> result = filmService.getFilmsByDirector(1, SortCategoryType.LIKES);
 
         verify(filmStorage).getFilmsByDirector(1);
 
@@ -295,7 +296,7 @@ class FilmServiceTest {
 
         when(filmStorage.getFilmsByDirector(1)).thenReturn(List.of(film1, film2));
 
-        Collection<Film> result = filmService.getFilmsByDirector(1, "year");
+        Collection<Film> result = filmService.getFilmsByDirector(1, SortCategoryType.YEAR);
 
         verify(filmStorage).getFilmsByDirector(1);
 

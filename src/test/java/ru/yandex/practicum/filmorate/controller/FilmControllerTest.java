@@ -9,13 +9,15 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.enums.ActionType;
 import ru.yandex.practicum.filmorate.enums.EventType;
+import ru.yandex.practicum.filmorate.enums.SortCategoryType;
+import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.service.*;
+import ru.yandex.practicum.filmorate.service.EventService;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import java.time.LocalDate;
 import java.util.Arrays;
@@ -24,8 +26,14 @@ import java.util.HashSet;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -36,18 +44,7 @@ class FilmControllerTest {
     @MockBean
     private FilmService filmService;
     @MockBean
-    private ValidateService validateService;
-    @MockBean
     private EventService eventService;
-    @MockBean
-    private UserService userService;
-    @MockBean
-    private MPAService mpaService;
-    @MockBean
-    private GenreService genreService;
-    @MockBean
-    private DirectorService directorService;
-
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -201,7 +198,7 @@ class FilmControllerTest {
                         new Director(1, "Director1"))))
                 .build();
 
-        when(filmService.getFilmsByDirector(1, "likes"))
+        when(filmService.getFilmsByDirector(1, SortCategoryType.LIKES))
                 .thenReturn(List.of(filmToCreate1, filmToCreate2));
 
         String response = mockMvc.perform(
@@ -212,7 +209,7 @@ class FilmControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        verify(filmService).getFilmsByDirector(1, "likes");
+        verify(filmService).getFilmsByDirector(1, SortCategoryType.LIKES);
         assertEquals(objectMapper.writeValueAsString(List.of(filmToCreate1, filmToCreate2)), response);
     }
 

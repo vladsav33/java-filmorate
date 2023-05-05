@@ -20,7 +20,6 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -37,7 +36,7 @@ public class FilmDbStorage implements FilmStorage {
     private final DirectorStorage directorStorage;
 
     @Override
-    public Collection<Film> get() {
+    public List<Film> get() {
         String sqlQuery =
                 "SELECT *" +
                         "FROM film";
@@ -46,7 +45,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> search(String query, Boolean director, Boolean film) {
+    public List<Film> search(String query, Boolean director, Boolean film) {
         StringBuilder sqlQuery = new StringBuilder();
         sqlQuery.append("SELECT * FROM film f " +
                 "LEFT JOIN film_x_director fxd ON f.film_id = fxd.film_id " +
@@ -95,7 +94,7 @@ public class FilmDbStorage implements FilmStorage {
             return stmt;
         }, keyHolder);
 
-        if (updatedRowsCount == 0) {
+        if (updatedRowsCount == 0 || keyHolder.getKey() == null) {
             log.info("Произошла ошибка при добавлении фильма {} в базу данных", film);
             return null;
         }
@@ -176,7 +175,7 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(queryFilmSelect, (rs, rowNum) -> makeFilm(rs), directorId);
     }
 
-    public Collection<Film> getPopularByGenreAndYear(int count, int genreId, int year) {
+    public List<Film> getPopularByGenreAndYear(int count, int genreId, int year) {
         List<Film> films;
         String sqlQuery = "SELECT f.film_id, f.name, f.description, f.release_dt, f.duration, f.rating_id, " +
                 "COUNT(fl.user_id) as likes " +
@@ -207,7 +206,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getFilmRecommendations(int userId) throws EmptyResultDataAccessException {
+    public List<Film> getFilmRecommendations(int userId) throws EmptyResultDataAccessException {
         String sqlQuery =
                 "WITH rec_user AS " +
                         "(SELECT t2.user_id " +
@@ -239,7 +238,7 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public Collection<Film> getCommonFilms(int userId, int friendId) {
+    public List<Film> getCommonFilms(int userId, int friendId) {
         String sqlQuery =
                 "SELECT film_id " +
                         "FROM film_like " +
@@ -266,7 +265,7 @@ public class FilmDbStorage implements FilmStorage {
                 .description(rs.getString("description"))
                 .releaseDate(rs.getDate("release_dt").toLocalDate())
                 .duration(rs.getInt("duration"))
-                .mpa(mpaStorage.getById(rs.getInt("rating_id")).orElseGet(null))
+                .mpa(mpaStorage.getById(rs.getInt("rating_id")).orElse(null))
                 .genres(getGenresByFilmId(filmId))
                 .likes(getLikesByFilmId(filmId))
                 .directors(getDirectorsByFilmId(filmId))

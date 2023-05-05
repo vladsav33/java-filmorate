@@ -8,9 +8,12 @@ import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 public class GenreServiceTest {
@@ -21,7 +24,7 @@ public class GenreServiceTest {
 
     @Test
     public void testFindAll() {
-        Collection<Genre> genres = Arrays.asList(
+        List<Genre> genres = Arrays.asList(
                 new Genre(1, "Комедия"),
                 new Genre(2, "Драма")
         );

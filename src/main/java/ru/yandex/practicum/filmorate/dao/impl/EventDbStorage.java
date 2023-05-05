@@ -14,7 +14,6 @@ import ru.yandex.practicum.filmorate.enums.EventType;
 import java.sql.*;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
-import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,8 +27,8 @@ public class EventDbStorage implements EventStorage {
     public Optional<Event> getById(int id) {
         String sqlQuery =
                 "SELECT * " +
-                "FROM event " +
-                "WHERE event_id = ?";
+                        "FROM event " +
+                        "WHERE event_id = ?";
         List<Event> events = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeEvent(rs), id);
 
         // обрабатываем результат выполнения запроса
@@ -42,11 +41,11 @@ public class EventDbStorage implements EventStorage {
     }
 
     @Override
-    public Collection<Event> getByUserId(int userId) {
+    public List<Event> getByUserId(int userId) {
         String sqlQuery =
                 "SELECT * " +
-                "FROM event " +
-                "WHERE user_id = ?";
+                        "FROM event " +
+                        "WHERE user_id = ?";
 
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeEvent(rs), userId);
     }
@@ -55,7 +54,7 @@ public class EventDbStorage implements EventStorage {
     public Event create(int userId, EventType eventType, ActionType actionType, long entityId) {
         String userSqlQuery =
                 "INSERT INTO event (user_id, event_type, action_type, entity_id, event_dttm) " +
-                "VALUES (?, ?, ?, ?, ?)";
+                        "VALUES (?, ?, ?, ?, ?)";
 
         KeyHolder keyHolder = new GeneratedKeyHolder();
         int updatedRowsCount = jdbcTemplate.update(connection -> {
@@ -68,7 +67,7 @@ public class EventDbStorage implements EventStorage {
             return stmt;
         }, keyHolder);
 
-        if (updatedRowsCount == 0) {
+        if (updatedRowsCount == 0 || keyHolder.getKey() == null) {
             log.info("Произошла ошибка при добавлении события для пользователя {} в базу данных", userId);
             return null;
         }
@@ -82,7 +81,7 @@ public class EventDbStorage implements EventStorage {
     }
 
     private Event makeEvent(ResultSet rs) throws SQLException {
-        Event event = Event.builder()
+        return Event.builder()
                 .eventId(rs.getInt("event_id"))
                 .userId(rs.getInt("user_id"))
                 .eventType(EventType.valueOf(rs.getString("event_type")))
@@ -90,6 +89,5 @@ public class EventDbStorage implements EventStorage {
                 .entityId(rs.getLong("entity_id"))
                 .eventDateTime(rs.getTimestamp("event_dttm").toInstant().toEpochMilli())
                 .build();
-        return event;
     }
 }

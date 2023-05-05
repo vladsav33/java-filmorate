@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.FilmStorage;
 import ru.yandex.practicum.filmorate.dao.UserStorage;
+import ru.yandex.practicum.filmorate.enums.SortCategoryType;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.SortByValidationException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
@@ -14,8 +15,6 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,11 +33,11 @@ public class FilmService {
     @NonNull
     private final DirectorService directorService;
 
-    public Collection<Film> findAll() {
+    public List<Film> findAll() {
         return filmStorage.get();
     }
 
-    public Collection<Film> searchFilms(String query, Boolean director, Boolean film) {
+    public List<Film> searchFilms(String query, Boolean director, Boolean film) {
         return filmStorage.search(query, director, film)
                 .stream()
                 .sorted(this::compare)
@@ -80,22 +79,23 @@ public class FilmService {
         log.debug("Удален лайк от пользователя ID = {} в фильме: {}", userId, film);
     }
 
-    public Collection<Film> getTop(int count, int genreId, int year) {
+    public List<Film> getTop(int count, int genreId, int year) {
         log.info("Получаем список из {} популярных фильмов, жанр {}, год {}", count, genreId, year);
         return filmStorage.getPopularByGenreAndYear(count, genreId, year);
     }
 
-    public Collection<Film> getFilmsByDirector(int directorId, String sortBy) {
+    public List<Film> getFilmsByDirector(int directorId, SortCategoryType sortBy) {
         directorService.checkIfDirectorExists(directorId);
         checkSortByParam(sortBy);
         List<Film> films = new ArrayList<>(filmStorage.getFilmsByDirector(directorId));
-        if (sortBy.equals("likes")) {
-            Collections.sort(films, this::compare);
+        if (sortBy == SortCategoryType.LIKES) {
+            films.sort(this::compare);
         } else {
-            Collections.sort(films,
-                    (film1, film2) -> {
+            films.sort((film1, film2) -> {
                         if (film1.getReleaseDate().isBefore(film2.getReleaseDate())) {
                             return -1;
+                        } else if (film1.getReleaseDate().equals(film2.getReleaseDate())) {
+                            return 0;
                         } else {
                             return 1;
                         }
@@ -113,7 +113,7 @@ public class FilmService {
         log.debug("Удален фильм: {}", film);
     }
 
-    public Collection<Film> getCommonFilms(int userId, int friendId) {
+    public List<Film> getCommonFilms(int userId, int friendId) {
         checkUserId(userId);
         checkUserId(friendId);
         return filmStorage.getCommonFilms(userId, friendId).stream()
@@ -133,8 +133,8 @@ public class FilmService {
         return filmStorage.getById(id).orElseThrow(() -> new FilmNotFoundException("Фильм с ID = " + id + " не найден."));
     }
 
-    private void checkSortByParam(String sortType) {
-        if (!sortType.equals("year") && !sortType.equals("likes")) {
+    private void checkSortByParam(SortCategoryType sortType) {
+        if (sortType != SortCategoryType.YEAR && sortType != SortCategoryType.LIKES) {
             throw new SortByValidationException("Некорректно введен параметр сортировки.");
         }
     }

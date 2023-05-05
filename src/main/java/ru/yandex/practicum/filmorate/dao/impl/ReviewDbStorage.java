@@ -7,6 +7,7 @@ import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dao.ReviewStorage;
+import ru.yandex.practicum.filmorate.exception.ReviewInsertDataBaseException;
 import ru.yandex.practicum.filmorate.exception.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.model.Review;
 
@@ -14,7 +15,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.Collection;
 import java.util.List;
 
 @Component("reviewDbStorage")
@@ -26,14 +26,14 @@ public class ReviewDbStorage implements ReviewStorage {
 
     @Override
     public Review getById(long reviewId) {
-        String sqlQuery = "SELECT r.review_id AS reviewId,\n" +
-                "\t\tr.content AS content,\n" +
-                "\t\tr.is_positive AS isPositive,\n" +
-                "\t\tr.creator_user_id AS userId,\n" +
-                "\t\tr.reviewed_film_id AS filmId,\n" +
-                "\t\tCOALESCE(SUM(rl.score), 0) AS useful\n" +
-                "FROM review AS r LEFT JOIN review_like AS rl ON r.review_id = rl.review_id\n" +
-                "WHERE r.review_id = ?\n" +
+        String sqlQuery = "SELECT r.review_id AS reviewId, " +
+                "r.content AS content, " +
+                "r.is_positive AS isPositive, " +
+                "r.creator_user_id AS userId, " +
+                "r.reviewed_film_id AS filmId, " +
+                "COALESCE(SUM(rl.score), 0) AS useful " +
+                "FROM review AS r LEFT JOIN review_like AS rl ON r.review_id = rl.review_id " +
+                "WHERE r.review_id = ? " +
                 "GROUP BY r.review_id, r.content, r.is_positive, r.creator_user_id, r.reviewed_film_id;";
 
         final List<Review> reviews = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeReview(rs), reviewId);
@@ -46,33 +46,33 @@ public class ReviewDbStorage implements ReviewStorage {
     }
 
     @Override
-    public Collection<Review> getReviewsByFilmId(int filmId, int count) {
-        String sqlQuery = "SELECT r.review_id AS reviewId,\n" +
-                "\t\tr.content AS content,\n" +
-                "\t\tr.is_positive AS isPositive,\n" +
-                "\t\tr.creator_user_id AS userId,\n" +
-                "\t\tr.reviewed_film_id AS filmId,\n" +
-                "\t\tCOALESCE(SUM(rl.score), 0) AS useful\n" +
-                "FROM review AS r LEFT JOIN review_like AS rl ON r.review_id = rl.review_id\n" +
-                "WHERE r.reviewed_film_id = ?\n" +
-                "GROUP BY r.review_id, r.content, r.is_positive, r.creator_user_id, r.reviewed_film_id\n" +
-                "ORDER BY useful DESC, reviewId\n" +
+    public List<Review> getReviewsByFilmId(int filmId, int count) {
+        String sqlQuery = "SELECT r.review_id AS reviewId, " +
+                "r.content AS content, " +
+                "r.is_positive AS isPositive, " +
+                "r.creator_user_id AS userId, " +
+                "r.reviewed_film_id AS filmId, " +
+                "COALESCE(SUM(rl.score), 0) AS useful " +
+                "FROM review AS r LEFT JOIN review_like AS rl ON r.review_id = rl.review_id " +
+                "WHERE r.reviewed_film_id = ? " +
+                "GROUP BY r.review_id, r.content, r.is_positive, r.creator_user_id, r.reviewed_film_id " +
+                "ORDER BY useful DESC, reviewId " +
                 "LIMIT ?;";
 
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeReview(rs), filmId, count);
     }
 
     @Override
-    public Collection<Review> getReviewsByAllFilms(int count) {
-        String sqlQuery = "SELECT r.review_id AS reviewId,\n" +
-                "\t\tr.content AS content,\n" +
-                "\t\tr.is_positive AS isPositive,\n" +
-                "\t\tr.creator_user_id AS userId,\n" +
-                "\t\tr.reviewed_film_id AS filmId,\n" +
-                "\t\tCOALESCE(SUM(rl.score), 0) AS useful\n" +
-                "FROM review AS r LEFT JOIN review_like AS rl ON r.review_id = rl.review_id\n" +
-                "GROUP BY r.review_id, r.content, r.is_positive, r.creator_user_id, r.reviewed_film_id\n" +
-                "ORDER BY 6 DESC, 1\n" +
+    public List<Review> getReviewsByAllFilms(int count) {
+        String sqlQuery = "SELECT r.review_id AS reviewId, " +
+                "r.content AS content, " +
+                "r.is_positive AS isPositive, " +
+                "r.creator_user_id AS userId, " +
+                "r.reviewed_film_id AS filmId, " +
+                "COALESCE(SUM(rl.score), 0) AS useful " +
+                "FROM review AS r LEFT JOIN review_like AS rl ON r.review_id = rl.review_id " +
+                "GROUP BY r.review_id, r.content, r.is_positive, r.creator_user_id, r.reviewed_film_id " +
+                "ORDER BY 6 DESC, 1 " +
                 "LIMIT ?;";
 
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeReview(rs), count);
@@ -92,6 +92,10 @@ public class ReviewDbStorage implements ReviewStorage {
             return stmt;
         }, keyHolder);
 
+        if (keyHolder.getKey() == null) {
+            log.error("Ошибка при добавлении отзыва в БД: {}", review);
+            throw new ReviewInsertDataBaseException("Ошибка при добавлении отзыва в БД: " + review);
+        }
         long createdId = keyHolder.getKey().longValue();
 
         return getById(createdId);

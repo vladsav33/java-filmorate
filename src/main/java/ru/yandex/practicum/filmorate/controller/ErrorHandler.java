@@ -1,10 +1,22 @@
 package ru.yandex.practicum.filmorate.controller;
 
+import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import ru.yandex.practicum.filmorate.exception.*;
+import ru.yandex.practicum.filmorate.exception.DirectorNotFoundException;
+import ru.yandex.practicum.filmorate.exception.DirectorValidationException;
+import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
+import ru.yandex.practicum.filmorate.exception.FilmValidationException;
+import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
+import ru.yandex.practicum.filmorate.exception.MPANotFoundException;
+import ru.yandex.practicum.filmorate.exception.ReviewInsertDataBaseException;
+import ru.yandex.practicum.filmorate.exception.ReviewNotFoundException;
+import ru.yandex.practicum.filmorate.exception.ReviewValidationException;
+import ru.yandex.practicum.filmorate.exception.SortByValidationException;
+import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
+import ru.yandex.practicum.filmorate.exception.UserValidationException;
 import ru.yandex.practicum.filmorate.model.ErrorResponse;
 
 @RestControllerAdvice
@@ -72,7 +84,7 @@ public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleNotNullReviewValidationException(final NotNullReviewValidationException e) {
+    public ErrorResponse handleReviewValidationException(final ReviewValidationException e) {
         return new ErrorResponse("Ошибка в заполнении полей отзыва", e.getMessage());
     }
 
@@ -82,7 +94,20 @@ public class ErrorHandler {
         return new ErrorResponse("Данная функция не поддерживается", e.getMessage());
     }
 
-    @ExceptionHandler()
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleConversionFailedException(final ConversionFailedException e) {
+        return new ErrorResponse("Введенная строка не соответствует формату, предусмотренному для поля", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleReviewInsertDataBaseException(final ReviewInsertDataBaseException e) {
+        return new ErrorResponse("Ошибка при добавлении отзыва в БД", e.getMessage());
+    }
+
+
+        @ExceptionHandler()
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleError(final Throwable e) {
         return new ErrorResponse("Произошла непредвиденная ошибка.", e.getMessage());
