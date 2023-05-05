@@ -90,12 +90,13 @@ public class FilmService {
         checkSortByParam(sortBy);
         List<Film> films = new ArrayList<>(filmStorage.getFilmsByDirector(directorId));
         if (sortBy.equals("likes")) {
-            Collections.sort(films, this::compare);
+            films.sort(this::compare);
         } else {
-            Collections.sort(films,
-                    (film1, film2) -> {
+            films.sort((film1, film2) -> {
                         if (film1.getReleaseDate().isBefore(film2.getReleaseDate())) {
                             return -1;
+                        } else if (film1.getReleaseDate().equals(film2.getReleaseDate())) {
+                            return 0;
                         } else {
                             return 1;
                         }

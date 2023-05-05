@@ -39,14 +39,6 @@ class FilmControllerTest {
     private ValidateService validateService;
     @MockBean
     private EventService eventService;
-    @MockBean
-    private UserService userService;
-    @MockBean
-    private MPAService mpaService;
-    @MockBean
-    private GenreService genreService;
-    @MockBean
-    private DirectorService directorService;
 
     @Autowired
     private ObjectMapper objectMapper;

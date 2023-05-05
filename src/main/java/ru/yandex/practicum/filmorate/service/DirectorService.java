@@ -39,8 +39,9 @@ public class DirectorService {
         directorStorage.delete(id);
     }
 
-    public Director checkIfDirectorExists(int id) {
-        return directorStorage.getById(id)
-                .orElseThrow(() -> new DirectorNotFoundException("Режиссер с id = " + id + " отсутствует в БД."));
+    public void checkIfDirectorExists(int id) {
+        directorStorage.getById(id)
+                .orElseThrow(() -> new DirectorNotFoundException(
+                        String.format("Режиссер с id = %d отсутствует в БД.", id)));
     }
 }

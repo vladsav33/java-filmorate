@@ -26,8 +26,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class DirectorControllerTest {
 
     @MockBean
-    private FilmService filmService;
-    @MockBean
     private DirectorService directorService;
 
     @Autowired

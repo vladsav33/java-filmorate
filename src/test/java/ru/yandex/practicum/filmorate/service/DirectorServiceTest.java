@@ -19,9 +19,9 @@ import static org.mockito.Mockito.when;
 class DirectorServiceTest {
     private final DirectorStorage directorStorage = Mockito.mock(DirectorDbStorage.class);
     private final DirectorService directorService = new DirectorService(directorStorage);
-    List<Director> directors = new ArrayList<>();
-    Director director1;
-    Director director2;
+    private List<Director> directors = new ArrayList<>();
+    private Director director1;
+    private Director director2;
 
     @Test
     void getAllDirectors() {
