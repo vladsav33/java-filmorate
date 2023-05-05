@@ -57,12 +57,12 @@ public class DirectorController {
                         bindingResult.getFieldError().getDefaultMessage(), director);
                 throw new DirectorValidationException("Ошибка в заполнении поля "
                         + bindingResult.getFieldError().getField());
-            } else {
-                log.warn("Возникла ошибка при добавлении/изменении режиссера {}, отличная от ошибки заполнения полей",
-                        director);
-                throw new DirectorValidationException(
-                        "Ошибка при добавлении/изменении режиссера, отличная от ошибки заполнения полей");
             }
+
+            log.warn("Возникла ошибка при добавлении/изменении режиссера {}, отличная от ошибки заполнения полей",
+                    director);
+            throw new DirectorValidationException(
+                    "Ошибка при добавлении/изменении режиссера, отличная от ошибки заполнения полей");
         }
     }
 }

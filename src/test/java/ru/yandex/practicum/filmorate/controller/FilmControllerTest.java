@@ -9,6 +9,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import ru.yandex.practicum.filmorate.enums.SortCategoryType;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.enums.ActionType;
@@ -193,7 +194,7 @@ class FilmControllerTest {
                         new Director(1, "Director1"))))
                 .build();
 
-        when(filmService.getFilmsByDirector(1, "likes"))
+        when(filmService.getFilmsByDirector(1, SortCategoryType.LIKES))
                 .thenReturn(List.of(filmToCreate1, filmToCreate2));
 
         String response = mockMvc.perform(
@@ -204,7 +205,7 @@ class FilmControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        verify(filmService).getFilmsByDirector(1, "likes");
+        verify(filmService).getFilmsByDirector(1, SortCategoryType.LIKES);
         assertEquals(objectMapper.writeValueAsString(List.of(filmToCreate1, filmToCreate2)), response);
     }
 

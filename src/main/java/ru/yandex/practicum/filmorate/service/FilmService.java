@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dao.FilmStorage;
 import ru.yandex.practicum.filmorate.dao.UserStorage;
+import ru.yandex.practicum.filmorate.enums.SortCategoryType;
 import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.SortByValidationException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
@@ -83,11 +84,11 @@ public class FilmService {
         return filmStorage.getPopularByGenreAndYear(count, genreId, year);
     }
 
-    public List<Film> getFilmsByDirector(int directorId, String sortBy) {
+    public List<Film> getFilmsByDirector(int directorId, SortCategoryType sortBy) {
         directorService.checkIfDirectorExists(directorId);
         checkSortByParam(sortBy);
         List<Film> films = new ArrayList<>(filmStorage.getFilmsByDirector(directorId));
-        if (sortBy.equals("likes")) {
+        if (sortBy == SortCategoryType.LIKES) {
             films.sort(this::compare);
         } else {
             films.sort((film1, film2) -> {
@@ -132,8 +133,8 @@ public class FilmService {
         return filmStorage.getById(id).orElseThrow(() -> new FilmNotFoundException("Фильм с ID = " + id + " не найден."));
     }
 
-    private void checkSortByParam(String sortType) {
-        if (!sortType.equals("year") && !sortType.equals("likes")) {
+    private void checkSortByParam(SortCategoryType sortType) {
+        if (sortType != SortCategoryType.YEAR && sortType != SortCategoryType.LIKES) {
             throw new SortByValidationException("Некорректно введен параметр сортировки.");
         }
     }

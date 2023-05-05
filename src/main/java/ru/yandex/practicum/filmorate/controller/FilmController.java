@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.enums.ActionType;
 import ru.yandex.practicum.filmorate.enums.EventType;
 import ru.yandex.practicum.filmorate.enums.SearchCategoryType;
+import ru.yandex.practicum.filmorate.enums.SortCategoryType;
 import ru.yandex.practicum.filmorate.exception.FilmValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.EventService;
@@ -108,7 +109,7 @@ public class FilmController {
     }
 
     @GetMapping("/director/{directorId}")
-    public List<Film> findFilmsByDirector(@PathVariable int directorId, @RequestParam String sortBy) {
+    public List<Film> findFilmsByDirector(@PathVariable int directorId, @RequestParam SortCategoryType sortBy) {
         log.info("Вывести все фильмы режиссера {} с сортировкой по {}.", directorId, sortBy);
         return filmService.getFilmsByDirector(directorId, sortBy);
     }
