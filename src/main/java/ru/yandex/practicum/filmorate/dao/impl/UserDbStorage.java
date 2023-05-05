@@ -13,7 +13,6 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -25,10 +24,10 @@ public class UserDbStorage implements UserStorage {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public Collection<User> get() {
+    public List<User> get() {
         String sqlQuery =
                 "SELECT * " +
-                        "FROM users ";
+                        "FROM \"user\" ";
 
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeUser(rs));
     }
@@ -37,7 +36,7 @@ public class UserDbStorage implements UserStorage {
     public Optional<User> getById(int id) {
         String sqlQuery =
                 "SELECT * " +
-                        "FROM users " +
+                        "FROM \"user\" " +
                         "WHERE user_id = ?";
         List<User> users = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeUser(rs), id);
 
@@ -53,7 +52,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public User create(User user) {
         String userSqlQuery =
-                "INSERT INTO users (email_txt, login_nm, user_nm, birth_dt) " +
+                "INSERT INTO \"user\" (email, login, name, birth_dt) " +
                         "VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         int updatedRowsCount = jdbcTemplate.update(connection -> {
@@ -65,7 +64,7 @@ public class UserDbStorage implements UserStorage {
             return stmt;
         }, keyHolder);
 
-        if (updatedRowsCount == 0) {
+        if (updatedRowsCount == 0 || keyHolder.getKey() == null) {
             log.info("Произошла ошибка при добавлении пользователя {} в базу данных", user);
             return null;
         }
@@ -81,8 +80,8 @@ public class UserDbStorage implements UserStorage {
     @Override
     public Optional<User> update(User user) {
         String userSqlQuery =
-                "UPDATE users " +
-                        "SET email_txt = ?, login_nm = ?, user_nm = ?, birth_dt = ? " +
+                "UPDATE \"user\" " +
+                        "SET email = ?, login = ?, name = ?, birth_dt = ? " +
                         "WHERE user_id = ?";
         int updatedRowsCount = jdbcTemplate.update(userSqlQuery,
                 user.getEmail(),
@@ -105,7 +104,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public void addFriend(User user, User friend) {
         String sqlQuery =
-                "MERGE INTO friends (user_id, friend_user_id) " +
+                "MERGE INTO friend (user_id, friend_user_id) " +
                         "VALUES (?, ?)";
         jdbcTemplate.update(sqlQuery, user.getId(), friend.getId());
     }
@@ -113,17 +112,25 @@ public class UserDbStorage implements UserStorage {
     @Override
     public void removeFriend(User user, User friend) {
         String sqlQuery =
-                "DELETE FROM friends " +
+                "DELETE FROM friend " +
                         "WHERE user_id = ? AND friend_user_id = ?";
         jdbcTemplate.update(sqlQuery, user.getId(), friend.getId());
+    }
+
+    @Override
+    public void removeUser(int userId) {
+        String sqlQuery =
+                "DELETE FROM \"user\" " +
+                        "WHERE user_id = ?";
+        jdbcTemplate.update(sqlQuery, userId);
     }
 
     private User makeUser(ResultSet rs) throws SQLException {
         int userId = rs.getInt("user_id");
         User user = User.builder()
-                .name(rs.getString("user_nm"))
-                .email(rs.getString("email_txt"))
-                .login(rs.getString("login_nm"))
+                .name(rs.getString("name"))
+                .email(rs.getString("email"))
+                .login(rs.getString("login"))
                 .birthday(rs.getDate("birth_dt").toLocalDate())
                 .friends(getFriendsByUserId(userId))
                 .build();
@@ -134,7 +141,7 @@ public class UserDbStorage implements UserStorage {
     private HashSet<Integer> getFriendsByUserId(int userId) {
         String sql =
                 "SELECT friend_user_id " +
-                        "FROM friends " +
+                        "FROM friend " +
                         "WHERE user_id = ?";
         List<Integer> friends = jdbcTemplate.queryForList(sql, Integer.class, userId);
         return new HashSet<>(friends);

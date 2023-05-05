@@ -15,7 +15,7 @@ import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.service.GenreService;
 
 import java.util.Arrays;
-import java.util.Collection;
+import java.util.List;
 
 @WebMvcTest(GenreController.class)
 public class GenreControllerTest {
@@ -32,7 +32,7 @@ public class GenreControllerTest {
     @Test
     @SneakyThrows
     public void testFindAll() {
-        Collection<Genre> genres = Arrays.asList(
+        List<Genre> genres = Arrays.asList(
                 new Genre(1, "Комедия"),
                 new Genre(2, "Драма")
         );
