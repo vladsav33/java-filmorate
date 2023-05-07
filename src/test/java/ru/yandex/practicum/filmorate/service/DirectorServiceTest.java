@@ -77,7 +77,7 @@ class DirectorServiceTest {
         when(directorStorage.udpate(directorUpdated)).thenReturn(Optional.of(directorUpdated));
         when(directorStorage.getById(directorUpdated.getId())).thenReturn(Optional.of(directorUpdated));
 
-        Director directorUpdatedFromDb = directorService.udpate(directorUpdated);
+        Director directorUpdatedFromDb = directorService.update(directorUpdated);
 
         assertEquals(directorUpdated, directorUpdatedFromDb, "Режиссер в БД не совпадает с обновленным");
         deleteDirectors();
