@@ -27,7 +27,7 @@ public class UserDbStorage implements UserStorage {
     public List<User> get() {
         String sqlQuery =
                 "SELECT * " +
-                        "FROM \"user\" ";
+                        "FROM filmorate_user ";
 
         return jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeUser(rs));
     }
@@ -36,7 +36,7 @@ public class UserDbStorage implements UserStorage {
     public Optional<User> getById(int id) {
         String sqlQuery =
                 "SELECT * " +
-                        "FROM \"user\" " +
+                        "FROM filmorate_user " +
                         "WHERE user_id = ?";
         List<User> users = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeUser(rs), id);
 
@@ -52,7 +52,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public User create(User user) {
         String userSqlQuery =
-                "INSERT INTO \"user\" (email, login, name, birth_dt) " +
+                "INSERT INTO filmorate_user (email, login, name, birth_dt) " +
                         "VALUES (?, ?, ?, ?)";
         KeyHolder keyHolder = new GeneratedKeyHolder();
         int updatedRowsCount = jdbcTemplate.update(connection -> {
@@ -80,7 +80,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public Optional<User> update(User user) {
         String userSqlQuery =
-                "UPDATE \"user\" " +
+                "UPDATE filmorate_user " +
                         "SET email = ?, login = ?, name = ?, birth_dt = ? " +
                         "WHERE user_id = ?";
         int updatedRowsCount = jdbcTemplate.update(userSqlQuery,
@@ -120,7 +120,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public void removeUser(int userId) {
         String sqlQuery =
-                "DELETE FROM \"user\" " +
+                "DELETE FROM filmorate_user " +
                         "WHERE user_id = ?";
         jdbcTemplate.update(sqlQuery, userId);
     }

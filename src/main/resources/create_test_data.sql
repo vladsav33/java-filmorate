@@ -30,13 +30,13 @@ values (3, 4);
 insert into film_x_genre (film_id, genre_id)
 values (3, 5);
 
-insert into "user" (email, login, name, birth_dt)
+insert into filmorate_user (email, login, name, birth_dt)
 values ('user1@yandex.ru', 'user1', 'first user', '2000-01-01');
-insert into "user" (email, login, name, birth_dt)
+insert into filmorate_user (email, login, name, birth_dt)
 values ('user2@yandex.ru', 'user2', 'second user', '2001-01-01');
-insert into "user" (email, login, name, birth_dt)
+insert into filmorate_user (email, login, name, birth_dt)
 values ('user3@yandex.ru', 'user3', 'third user', '2002-01-01');
-insert into "user" (email, login, name, birth_dt)
+insert into filmorate_user (email, login, name, birth_dt)
 values ('user4@yandex.ru', 'user4', 'forth user', '2003-01-01');
 
 insert into friend (user_id, friend_user_id, status)

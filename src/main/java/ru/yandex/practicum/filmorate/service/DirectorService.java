@@ -29,7 +29,7 @@ public class DirectorService {
         return directorStorage.create(director);
     }
 
-    public Director udpate(Director director) {
+    public Director update(Director director) {
         getIfDirectorExists(director.getId());
         return directorStorage.udpate(director).get();
     }
