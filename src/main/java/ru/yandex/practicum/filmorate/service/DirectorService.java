@@ -22,8 +22,7 @@ public class DirectorService {
     }
 
     public Director getById(int id) {
-        checkIfDirectorExists(id);
-        return directorStorage.getById(id).get();
+        return getIfDirectorExists(id);
     }
 
     public Director create(Director director) {
@@ -31,7 +30,7 @@ public class DirectorService {
     }
 
     public Director udpate(Director director) {
-        checkIfDirectorExists(director.getId());
+        getIfDirectorExists(director.getId());
         return directorStorage.udpate(director).get();
     }
 
@@ -39,8 +38,8 @@ public class DirectorService {
         directorStorage.delete(id);
     }
 
-    public void checkIfDirectorExists(int id) {
-        directorStorage.getById(id)
+    public Director getIfDirectorExists(int id) {
+        return directorStorage.getById(id)
                 .orElseThrow(() -> new DirectorNotFoundException(
                         String.format("Режиссер с id = %d отсутствует в БД.", id)));
     }

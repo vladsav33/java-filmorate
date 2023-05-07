@@ -85,7 +85,7 @@ public class FilmService {
     }
 
     public List<Film> getFilmsByDirector(int directorId, SortCategoryType sortBy) {
-        directorService.checkIfDirectorExists(directorId);
+        directorService.getIfDirectorExists(directorId);
         checkSortByParam(sortBy);
         List<Film> films = new ArrayList<>(filmStorage.getFilmsByDirector(directorId));
         if (sortBy == SortCategoryType.LIKES) {
