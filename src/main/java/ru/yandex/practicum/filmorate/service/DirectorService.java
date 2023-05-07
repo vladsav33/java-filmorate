@@ -30,7 +30,7 @@ public class DirectorService {
         return directorStorage.create(director);
     }
 
-    public Director udpate(Director director) {
+    public Director update(Director director) {
         checkIfDirectorExists(director.getId());
         return directorStorage.udpate(director).get();
     }

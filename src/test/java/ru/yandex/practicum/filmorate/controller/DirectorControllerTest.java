@@ -111,7 +111,7 @@ class DirectorControllerTest {
     @SneakyThrows
     void updateDirector() {
         Director director = Director.builder().id(1).name("director1").build();
-        when(directorService.udpate(director)).thenReturn(director);
+        when(directorService.update(director)).thenReturn(director);
 
         String response = mockMvc
                 .perform(put("/directors")
@@ -122,7 +122,7 @@ class DirectorControllerTest {
                 .getResponse()
                 .getContentAsString();
 
-        verify(directorService).udpate(director);
+        verify(directorService).update(director);
         assertEquals(objectMapper.writeValueAsString(director), response);
     }
 
@@ -132,20 +132,20 @@ class DirectorControllerTest {
         Director director1 = Director.builder().id(1).name(null).build();
         Director director2 = Director.builder().id(2).name("     ").build();
 
-        when(directorService.udpate(director1)).thenReturn(director1);
+        when(directorService.update(director1)).thenReturn(director1);
 
         mockMvc.perform(put("/directors")
                         .contentType("application/json")
                         .content(objectMapper.writeValueAsString(director1)))
                 .andExpect(status().isBadRequest());
 
-        verify(directorService, never()).udpate(any());
+        verify(directorService, never()).update(any());
 
-        when(directorService.udpate(director2)).thenReturn(director2);
+        when(directorService.update(director2)).thenReturn(director2);
 
         mockMvc.perform(put("/directors").contentType("application/json").content(objectMapper.writeValueAsString(director2)))
                 .andExpect(status().isBadRequest());
 
-        verify(directorService, never()).udpate(any());
+        verify(directorService, never()).update(any());
     }
 }
