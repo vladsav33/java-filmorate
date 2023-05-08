@@ -4,38 +4,44 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.SneakyThrows;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import ru.yandex.practicum.filmorate.enums.ActionType;
+import ru.yandex.practicum.filmorate.enums.EventType;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.service.*;
+import ru.yandex.practicum.filmorate.service.EventService;
+import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
+import static org.mockito.Mockito.any;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
+import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest
+@SpringBootTest
+@AutoConfigureMockMvc
 class UserControllerTest {
 
     @MockBean
     private UserService userService;
     @MockBean
-    private ValidateService validateService;
-    @MockBean
-    private FilmService filmService;
-    @MockBean
-    private MPAService mpaService;
-    @MockBean
-    private GenreService genreService;
-
+    private EventService eventService;
     @Autowired
     private ObjectMapper objectMapper;
     @Autowired
@@ -196,6 +202,7 @@ class UserControllerTest {
                 .andExpect(status().isOk());
 
         verify(userService).addFriend(userId1, userId2);
+        verify(eventService, times(1)).createEvent(userId1, ActionType.ADD, EventType.FRIEND, userId2);
     }
 
     @Test
@@ -206,6 +213,62 @@ class UserControllerTest {
                 .andExpect(status().isOk());
 
         verify(userService).removeFriend(userId1, userId2);
+        verify(eventService, times(1)).createEvent(userId1, ActionType.REMOVE, EventType.FRIEND, userId2);
     }
 
+    @Test
+    @SneakyThrows
+    public void testGetEventsWithInvalidUserId() {
+        // Arrange
+        int invalidUserId = 100;
+
+        when(userService.findById(invalidUserId)).thenThrow(new UserNotFoundException(String.format("Пользователь с ID = %d не найден.", invalidUserId)));
+
+        mockMvc.perform(get("/users/" + invalidUserId + "/feed"))
+                .andExpect(status().isNotFound());
+
+        verify(userService).findById(invalidUserId);
+        verifyNoInteractions(eventService);
+    }
+
+    @Test
+    @SneakyThrows
+    public void testGetEventsWithValidUserId() {
+        // Arrange
+        int userId = 1;
+
+        when(userService.findById(userId)).thenReturn(null);
+        when(eventService.findByUserId(userId)).thenReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/users/" + userId + "/feed"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").isArray());
+
+        verify(userService).findById(userId);
+        verify(eventService).findByUserId(userId);
+    }
+
+    @Test
+    @SneakyThrows
+    public void testRemoveUser() {
+        int userId = 1;
+
+        mockMvc.perform(MockMvcRequestBuilders.delete("/users/" + userId))
+                .andExpect(status().isOk());
+        verify(userService, times(1)).removeUser(userId);
+    }
+
+    @Test
+    public void testGetFilmRecommendations() throws Exception {
+        int userId = 1;
+        mockMvc.perform(get("/users/" + userId + "/recommendations"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
+    public void testGetFilmRecommendationsWithNotExistedId() throws Exception {
+        int userId = 123;
+        mockMvc.perform(get("/users" + userId + "/recommendations"))
+                .andExpect(status().isNotFound());
+    }
 }
