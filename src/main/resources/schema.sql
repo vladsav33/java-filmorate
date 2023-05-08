@@ -47,6 +47,7 @@ CREATE TABLE IF NOT EXISTS filmorate_user (
 CREATE TABLE IF NOT EXISTS film_like (
   film_id integer REFERENCES film (film_id) ON DELETE CASCADE ON UPDATE CASCADE,
   user_id integer REFERENCES filmorate_user (user_id) ON DELETE CASCADE ON UPDATE CASCADE,
+  rating int,
   PRIMARY KEY (film_id, user_id)
 );
 
