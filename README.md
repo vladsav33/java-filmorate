@@ -12,4 +12,4 @@ Cервис для работы с фильмами и оценками поль
 * Добавление режиссеров в фильмы
 
 ## Модель данных
-![DB Model](https://github.com/vladsav33/java-filmorate/blob/main/src/main/resources/db_model_rating.png)
+![DB Model](https://github.com/vladsav33/java-filmorate/blob/64b64f7a3190594d5fec39ad72949b3f3db5e714/src/main/resources/db_model_rating.pngg)
