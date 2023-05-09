@@ -61,13 +61,13 @@ public class FilmService {
                 -> new FilmNotFoundException("Фильм с ID = " + film.getId() + " не найден."));
     }
 
-    public void addLike(int filmId, int userId) {
+    public void addLike(int filmId, int userId, int rating) {
         Film film = checkFilmId(filmId);
         User user = checkUserId(userId);
 
-        filmStorage.addLike(film, user);
+        filmStorage.addLike(film, user, rating);
 
-        log.debug("Добавлен лайк от пользователя ID = {} в фильм: {}", userId, film);
+        log.debug("Добавлен лайк от пользователя ID = {} в фильм: {} с рейтингом {}", userId, film, rating);
     }
 
     public void removeLike(int filmId, int userId) {

@@ -16,7 +16,7 @@ public class InMemoryFilmStorage extends BaseModelStorage<Film> implements FilmS
     }
 
     @Override
-    public void addLike(Film film, User user) {
+    public void addLike(Film film, User user, int rating) {
         film.getLikes().put(user.getId(), 0);
     }
 

@@ -66,9 +66,9 @@ public class FilmController {
     }
 
     @PutMapping("/{filmId}/like/{userId}")
-    public void addLike(@PathVariable int filmId, @PathVariable int userId) {
+    public void addLike(@PathVariable int filmId, @PathVariable int userId, @RequestParam(defaultValue = "0") int rating) {
         log.info("Добавляем лайк фильму ID = {} от пользователя ID = {}", filmId, userId);
-        filmService.addLike(filmId, userId);
+        filmService.addLike(filmId, userId, rating);
         eventService.createEvent(userId, ActionType.ADD, EventType.LIKE, filmId);
     }
 
