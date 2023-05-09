@@ -124,6 +124,8 @@ public class FilmDbStorageTest {
     @Test
     public void testAddLike() {
         Film film = filmDbStorage.getById(3).orElse(null);
+        int rating = 6;
+
         assertNotNull(film);
 
         User user = User.builder()
@@ -134,7 +136,7 @@ public class FilmDbStorageTest {
                 .build();
         user.setId(1);
 
-        filmDbStorage.addLike(film, user);
+        filmDbStorage.addLike(film, user, rating);
         Film filmWithLike = filmDbStorage.getById(3).orElse(null);
         assertNotNull(filmWithLike);
 

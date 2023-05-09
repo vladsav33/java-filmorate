@@ -68,20 +68,24 @@ class FilmServiceTest {
 
     @Test
     void addLikeWhenFilmIsNull() {
+        int rating = 6;
+
         when(filmStorage.getById(filmId)).thenReturn(Optional.empty());
         when(userStorage.getById(userId)).thenReturn(Optional.of(user));
 
-        FilmNotFoundException exception = assertThrows(FilmNotFoundException.class, () -> filmService.addLike(filmId, userId));
+        FilmNotFoundException exception = assertThrows(FilmNotFoundException.class, () -> filmService.addLike(filmId, userId, rating));
         verify(filmStorage).getById(filmId);
         assertEquals(exception.getMessage(), "Фильм с ID = " + filmId + " не найден.");
     }
 
     @Test
     void addLikeWhenUserIsNull() {
+        int rating = 6;
+
         when(filmStorage.getById(filmId)).thenReturn(Optional.of(film));
         when(userStorage.getById(userId)).thenReturn(Optional.empty());
 
-        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> filmService.addLike(filmId, userId));
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> filmService.addLike(filmId, userId, rating));
         verify(filmStorage).getById(filmId);
         verify(userStorage).getById(userId);
         assertEquals(exception.getMessage(), "Пользователь с ID = " + userId + " не найден.");
@@ -89,14 +93,16 @@ class FilmServiceTest {
 
     @Test
     void addLike() {
+        int rating = 6;
+
         when(filmStorage.getById(filmId)).thenReturn(Optional.of(film));
         when(userStorage.getById(userId)).thenReturn(Optional.of(user));
 
-        filmService.addLike(filmId, userId);
+        filmService.addLike(filmId, userId, rating);
 
         verify(filmStorage).getById(filmId);
         verify(userStorage).getById(userId);
-        verify(filmStorage).addLike(film, user);
+        verify(filmStorage).addLike(film, user, rating);
     }
 
     @Test

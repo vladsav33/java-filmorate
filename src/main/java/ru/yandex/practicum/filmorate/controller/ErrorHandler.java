@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.FilmValidationException;
 import ru.yandex.practicum.filmorate.exception.GenreNotFoundException;
 import ru.yandex.practicum.filmorate.exception.MPANotFoundException;
+import ru.yandex.practicum.filmorate.exception.RatingValidationException;
 import ru.yandex.practicum.filmorate.exception.ReviewInsertDataBaseException;
 import ru.yandex.practicum.filmorate.exception.ReviewNotFoundException;
 import ru.yandex.practicum.filmorate.exception.ReviewValidationException;
@@ -110,5 +111,11 @@ public class ErrorHandler {
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleError(final Throwable e) {
         return new ErrorResponse("Произошла непредвиденная ошибка.", e.getMessage());
+    }
+
+    @ExceptionHandler
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ErrorResponse handleRatingValidationException(final RatingValidationException e) {
+        return new ErrorResponse("Значение рейтинга не находится в диапазоне 1-10",  e.getMessage());
     }
 }

@@ -19,6 +19,7 @@ import ru.yandex.practicum.filmorate.enums.EventType;
 import ru.yandex.practicum.filmorate.enums.SearchCategoryType;
 import ru.yandex.practicum.filmorate.enums.SortCategoryType;
 import ru.yandex.practicum.filmorate.exception.FilmValidationException;
+import ru.yandex.practicum.filmorate.exception.RatingValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.FilmService;
@@ -67,6 +68,9 @@ public class FilmController {
 
     @PutMapping("/{filmId}/like/{userId}")
     public void addLike(@PathVariable int filmId, @PathVariable int userId, @RequestParam(defaultValue = "0") int rating) {
+        if (rating < 0 || rating > 10) {
+            throw new RatingValidationException("Ошибка в рейтинге");
+        }
         log.info("Добавляем лайк фильму ID = {} от пользователя ID = {}", filmId, userId);
         filmService.addLike(filmId, userId, rating);
         eventService.createEvent(userId, ActionType.ADD, EventType.LIKE, filmId);
