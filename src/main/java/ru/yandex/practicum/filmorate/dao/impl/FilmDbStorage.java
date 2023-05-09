@@ -20,8 +20,8 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -288,13 +288,14 @@ public class FilmDbStorage implements FilmStorage {
                 .collect(Collectors.toSet());
     }
 
-    private Set<Integer> getLikesByFilmId(int filmId) {
+    private Map<Integer, Integer> getLikesByFilmId(int filmId) {
         String sqlQuery =
-                "SELECT user_id " +
+                "SELECT user_id, rating " +
                         "FROM film_like " +
                         "WHERE film_id = ?";
-        List<Integer> likes = jdbcTemplate.queryForList(sqlQuery, Integer.class, filmId);
-        return new HashSet<>(likes);
+        List<Map<String, Object>> likes = jdbcTemplate.queryForList(sqlQuery, filmId);
+        return likes.stream().collect(Collectors.toMap(key -> (Integer) key.get("user_id"),
+                key -> (Integer) (key.get("rating") != null ? key.get("rating") : 0)));
     }
 
     private Set<Director> getDirectorsByFilmId(int filmId) {

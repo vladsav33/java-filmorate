@@ -8,7 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.jdbc.SqlGroup;
-
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -140,7 +139,7 @@ public class FilmDbStorageTest {
         assertNotNull(filmWithLike);
 
         assertEquals(2, filmWithLike.getLikes().size());
-        assertTrue(filmWithLike.getLikes().contains(1));
+        assertTrue(filmWithLike.getLikes().get(1) != null);
     }
 
     @Test
@@ -161,7 +160,7 @@ public class FilmDbStorageTest {
         assertNotNull(filmWithoutLike);
 
         assertEquals(3, filmWithoutLike.getLikes().size());
-        assertFalse(filmWithoutLike.getLikes().contains(1));
+        assertFalse(filmWithoutLike.getLikes().get(1) != null);
     }
 
     @Test

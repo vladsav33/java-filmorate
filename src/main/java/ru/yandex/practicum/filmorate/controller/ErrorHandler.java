@@ -106,7 +106,6 @@ public class ErrorHandler {
         return new ErrorResponse("Ошибка при добавлении отзыва в БД", e.getMessage());
     }
 
-
     @ExceptionHandler()
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleError(final Throwable e) {

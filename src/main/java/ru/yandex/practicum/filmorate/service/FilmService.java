@@ -15,7 +15,7 @@ import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,13 +49,13 @@ public class FilmService {
     }
 
     public Film createFilm(Film film) {
-        film.setLikes(new HashSet<>());
+        film.setLikes(new HashMap<>());
         return filmStorage.create(film);
     }
 
     public Film updateFilm(Film film) {
         if (film.getLikes() == null) {
-            film.setLikes(new HashSet<>());
+            film.setLikes(new HashMap<>());
         }
         return filmStorage.update(film).orElseThrow(()
                 -> new FilmNotFoundException("Фильм с ID = " + film.getId() + " не найден."));

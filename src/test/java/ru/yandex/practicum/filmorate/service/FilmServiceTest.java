@@ -15,10 +15,11 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -61,8 +62,8 @@ class FilmServiceTest {
 
     @BeforeEach
     void setLikes() {
-        film.setLikes(new HashSet<>());
-        popularFilm.setLikes(Set.of(1, 2, 3));
+        film.setLikes(new HashMap<>());
+        popularFilm.setLikes(Map.of(1, 5, 2, 5, 3, 5));
     }
 
     @Test
@@ -133,7 +134,7 @@ class FilmServiceTest {
 
     @Test
     void removeLike() {
-        film.getLikes().add(userId);
+        film.getLikes().put(userId, 5);
         when(filmStorage.getById(filmId)).thenReturn(Optional.of(film));
         when(userStorage.getById(userId)).thenReturn(Optional.of(user));
 
@@ -251,7 +252,7 @@ class FilmServiceTest {
                 .duration(100)
                 .directors(new HashSet<>(Arrays.asList(
                         new Director(1, "Director1"))))
-                .likes(new HashSet<>(Arrays.asList(2)))
+                .likes(new HashMap<>(Map.of(2, 5)))
                 .build();
         Film film2 = Film.builder()
                 .name("name2")
@@ -260,7 +261,7 @@ class FilmServiceTest {
                 .duration(200)
                 .directors(new HashSet<>(Arrays.asList(
                         new Director(1, "Director1"))))
-                .likes(new HashSet<>(Arrays.asList(1, 2)))
+                .likes(new HashMap<>(Map.of(1, 5, 2, 5)))
                 .build();
 
         when(filmStorage.getFilmsByDirector(1)).thenReturn(List.of(film2, film1));
@@ -282,7 +283,7 @@ class FilmServiceTest {
                 .duration(100)
                 .directors(new HashSet<>(Arrays.asList(
                         new Director(1, "Director1"))))
-                .likes(new HashSet<>(Arrays.asList(2)))
+                .likes(new HashMap<>(Map.of(2, 5)))
                 .build();
         Film film2 = Film.builder()
                 .name("name2")
@@ -291,7 +292,7 @@ class FilmServiceTest {
                 .duration(200)
                 .directors(new HashSet<>(Arrays.asList(
                         new Director(1, "Director1"))))
-                .likes(new HashSet<>(Arrays.asList(1, 2)))
+                .likes(new HashMap<>(Map.of(1, 5, 2, 5)))
                 .build();
 
         when(filmStorage.getFilmsByDirector(1)).thenReturn(List.of(film1, film2));
@@ -324,7 +325,7 @@ class FilmServiceTest {
                 .duration(100)
                 .directors(new HashSet<>(Arrays.asList(
                         new Director(1, "Director1"))))
-                .likes(new HashSet<>(Arrays.asList(2)))
+                .likes(new HashMap<>(Map.of(2, 5)))
                 .build();
 
         when(filmStorage.search("name1", false, true)).thenReturn(List.of(film1));
