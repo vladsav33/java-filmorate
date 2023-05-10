@@ -34,13 +34,15 @@ public class Film extends BaseModel {
     private Set<Genre> genres;
     private MPA mpa;
     private Set<Director> directors;
+    private double averageRating;
 
-    public double getAverageRating() {
+    public double setAverageRating() {
         if (likes != null) {
-            return likes.values().stream().filter(value -> value != 0).mapToDouble(Integer::doubleValue).average().orElse(0);
+            averageRating = likes.values().stream().filter(value -> value != 0).mapToDouble(Integer::doubleValue).average().orElse(0);
         } else {
-            return 0;
+            averageRating = 0;
         }
+        return averageRating;
     }
 
 }

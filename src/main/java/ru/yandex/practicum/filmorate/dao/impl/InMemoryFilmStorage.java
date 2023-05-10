@@ -39,7 +39,7 @@ public class InMemoryFilmStorage extends BaseModelStorage<Film> implements FilmS
 
     @Override
     @Deprecated
-    public List<Film> getPopularByGenreAndYear(int count, int genreId, int year) {
+    public List<Film> getPopularByGenreAndYear(int count, int genreId, int year, boolean byRating) {
         throw new UnsupportedOperationException("Реализация метода существует только при работе с БД");
     }
 

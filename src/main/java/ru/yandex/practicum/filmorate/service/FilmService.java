@@ -79,9 +79,9 @@ public class FilmService {
         log.debug("Удален лайк от пользователя ID = {} в фильме: {}", userId, film);
     }
 
-    public List<Film> getTop(int count, int genreId, int year) {
+    public List<Film> getTop(int count, int genreId, int year, boolean byRating) {
         log.info("Получаем список из {} популярных фильмов, жанр {}, год {}", count, genreId, year);
-        return filmStorage.getPopularByGenreAndYear(count, genreId, year);
+        return filmStorage.getPopularByGenreAndYear(count, genreId, year, byRating);
     }
 
     public List<Film> getFilmsByDirector(int directorId, SortCategoryType sortBy) {

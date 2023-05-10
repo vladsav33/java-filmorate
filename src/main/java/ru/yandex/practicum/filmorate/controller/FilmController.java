@@ -60,10 +60,11 @@ public class FilmController {
     @GetMapping("/popular")
     public List<Film> getPopular(@RequestParam(defaultValue = "10") int count,
                                  @RequestParam(defaultValue = "0") int genreId,
-                                 @RequestParam(defaultValue = "0") int year) {
+                                 @RequestParam(defaultValue = "0") int year,
+                                 @RequestParam(defaultValue = "false") boolean byRating) {
         log.info("Вывести ТОП {} фильмов, жанр: {}, год: {}", count, genreId, year);
 
-        return filmService.getTop(count, genreId, year);
+        return filmService.getTop(count, genreId, year, byRating);
     }
 
     @PutMapping("/{filmId}/like/{userId}")

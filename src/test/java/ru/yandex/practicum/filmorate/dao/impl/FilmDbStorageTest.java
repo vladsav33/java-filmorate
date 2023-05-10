@@ -180,28 +180,28 @@ public class FilmDbStorageTest {
 
     @Test
     void testgetPopularByGenreAndYear() {
-        Collection<Film> films = filmDbStorage.getPopularByGenreAndYear(10, 2, 2020);
+        Collection<Film> films = filmDbStorage.getPopularByGenreAndYear(10, 2, 2020, false);
         assertEquals(1, films.size());
         assertEquals(3, ((List<Film>)films).get(0).getId());
     }
 
     @Test
     void testgetPopularByGenre() {
-        Collection<Film> films = filmDbStorage.getPopularByGenreAndYear(10, 3, 0);
+        Collection<Film> films = filmDbStorage.getPopularByGenreAndYear(10, 3, 0, false);
         assertEquals(1, films.size());
         assertEquals(1, ((List<Film>)films).get(0).getId());
     }
 
     @Test
     void testgetPopularByYear() {
-        Collection<Film> films = filmDbStorage.getPopularByGenreAndYear(10, 0, 2021);
+        Collection<Film> films = filmDbStorage.getPopularByGenreAndYear(10, 0, 2021, false);
         assertEquals(1, films.size());
         assertEquals(2, ((List<Film>)films).get(0).getId());
     }
 
     @Test
     void testgetPopular() {
-        Collection<Film> films = filmDbStorage.getPopularByGenreAndYear(10, 0, 0);
+        Collection<Film> films = filmDbStorage.getPopularByGenreAndYear(10, 0, 0, false);
         assertEquals(3, films.size());
     }
 

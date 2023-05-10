@@ -175,19 +175,36 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(queryFilmSelect, (rs, rowNum) -> makeFilm(rs), directorId);
     }
 
-    public List<Film> getPopularByGenreAndYear(int count, int genreId, int year) {
+    public List<Film> getPopularByGenreAndYear(int count, int genreId, int year, boolean byRating) {
         List<Film> films;
-        String sqlQuery = "SELECT f.film_id, f.name, f.description, f.release_dt, f.duration, f.rating_id, " +
-                "COUNT(fl.user_id) as likes " +
-                "FROM film f " +
-                "LEFT JOIN film_like fl ON f.film_id=fl.film_id " +
-                "LEFT JOIN film_x_genre fg ON f.film_id=fg.film_id AND fg.genre_id = ?" +
-                "WHERE COALESCE (fg.genre_id, 0) = ?" +
-                "AND EXTRACT (year FROM COALESCE(f.release_dt, '1800-01-01')) = " +
-                "CASE WHEN ? = 0 THEN EXTRACT (year FROM COALESCE(f.release_dt, '1800-01-01')) ELSE ? END " +
-                "GROUP BY f.film_id, f.name, f.description, f.release_dt, f.duration, f.rating_id " +
-                "ORDER BY likes DESC, film_id " +
-                "LIMIT ?";
+        String sqlQuery;
+
+        if (byRating) {
+            sqlQuery = "SELECT f.film_id, f.name, f.description, f.release_dt, f.duration, f.rating_id, " +
+                    "AVG(fl.rating) as likes " +
+                    "FROM film f " +
+                    "LEFT JOIN film_like fl ON f.film_id=fl.film_id " +
+                    "LEFT JOIN film_x_genre fg ON f.film_id=fg.film_id AND fg.genre_id = ?" +
+                    "WHERE COALESCE (fg.genre_id, 0) = ?" +
+                    "AND EXTRACT (year FROM COALESCE(f.release_dt, '1800-01-01')) = " +
+                    "CASE WHEN ? = 0 THEN EXTRACT (year FROM COALESCE(f.release_dt, '1800-01-01')) ELSE ? END " +
+                    "AND fl.rating <> 0 " +
+                    "GROUP BY f.film_id, f.name, f.description, f.release_dt, f.duration, f.rating_id " +
+                    "ORDER BY likes DESC, film_id " +
+                    "LIMIT ?";
+        } else {
+            sqlQuery = "SELECT f.film_id, f.name, f.description, f.release_dt, f.duration, f.rating_id, " +
+                    "COUNT(fl.user_id) as likes " +
+                    "FROM film f " +
+                    "LEFT JOIN film_like fl ON f.film_id=fl.film_id " +
+                    "LEFT JOIN film_x_genre fg ON f.film_id=fg.film_id AND fg.genre_id = ?" +
+                    "WHERE COALESCE (fg.genre_id, 0) = ?" +
+                    "AND EXTRACT (year FROM COALESCE(f.release_dt, '1800-01-01')) = " +
+                    "CASE WHEN ? = 0 THEN EXTRACT (year FROM COALESCE(f.release_dt, '1800-01-01')) ELSE ? END " +
+                    "GROUP BY f.film_id, f.name, f.description, f.release_dt, f.duration, f.rating_id " +
+                    "ORDER BY likes DESC, film_id " +
+                    "LIMIT ?";
+        }
 
         films = jdbcTemplate.query(sqlQuery, (rs, rowNum) -> makeFilm(rs), genreId, genreId, year, year, count);
 
@@ -271,6 +288,7 @@ public class FilmDbStorage implements FilmStorage {
                 .directors(getDirectorsByFilmId(filmId))
                 .build();
         film.setId(filmId);
+        film.setAverageRating();
         return film;
     }
 

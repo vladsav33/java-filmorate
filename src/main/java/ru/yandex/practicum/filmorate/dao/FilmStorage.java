@@ -23,7 +23,7 @@ public interface FilmStorage {
 
     List<Film> getFilmsByDirector(int directorId);
 
-    List<Film> getPopularByGenreAndYear(int count, int genreId, int year);
+    List<Film> getPopularByGenreAndYear(int count, int genreId, int year, boolean byRating);
 
     void removeFilm(int filmId);
 
