@@ -45,7 +45,7 @@ public class InMemoryFilmStorage extends BaseModelStorage<Film> implements FilmS
 
     @Override
     @Deprecated
-    public List<Film> getFilmRecommendations(int userId) {
+    public List<Film> getFilmRecommendations(int userId, boolean byRating) {
         throw new UnsupportedOperationException("Реализация метода существует только при работе с БД");
     }
 

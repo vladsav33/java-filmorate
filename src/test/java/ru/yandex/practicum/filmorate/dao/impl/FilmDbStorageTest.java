@@ -224,7 +224,7 @@ public class FilmDbStorageTest {
     @Test
     public void testGetFilmRecommendations() {
         Film expectedFilm = filmDbStorage.getById(2).get();
-        Collection<Film> films = filmDbStorage.getFilmRecommendations(3);
+        Collection<Film> films = filmDbStorage.getFilmRecommendations(3, false);
         Film actualFilm = films.iterator().next();
 
         assertEquals(1, films.size());

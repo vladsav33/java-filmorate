@@ -223,8 +223,37 @@ public class FilmDbStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getFilmRecommendations(int userId) throws EmptyResultDataAccessException {
-        String sqlQuery =
+    public List<Film> getFilmRecommendations(int userId, boolean byRating) throws EmptyResultDataAccessException {
+        String sqlQuery;
+        if (byRating) {
+            sqlQuery =
+                "WITH rec_user AS " +
+                        "(SELECT t2.user_id " +
+                        "FROM film_like t1 " +
+                        "INNER JOIN film_like t2 ON t1.film_id = t2.film_id " +
+                        "AND t2.user_id <> t1.user_id " +
+                        "AND t2.rating BETWEEN t1.rating - 1 AND t1.rating + 1 " +
+                        "AND (" +
+                            "t2.rating > 5 AND t1.rating > 5 " +
+                            "OR " +
+                            "t2.rating <= 5 AND t1.rating <= 5" +
+                            "AND t2.rating <> 0 AND t1.rating <> 0" +
+                        ") " +
+                        "WHERE t1.user_id = ? " +
+                        "GROUP BY t2.user_id " +
+                        "ORDER BY COUNT(t2.film_id) DESC " +
+                        "LIMIT 1) " +
+
+                        "SELECT rec.film_id " +
+                        "FROM film_like rec " +
+                        "INNER JOIN rec_user ON rec.user_id = rec_user.user_id " +
+                        "LEFT JOIN film_like base ON rec.film_id = base.film_id " +
+                        "AND base.user_id = ? " +
+                        "WHERE 1=1 " +
+                        "AND base.film_id IS NULL " +
+                        "AND rec.rating > 5";
+        } else {
+            sqlQuery =
                 "WITH rec_user AS " +
                         "(SELECT t2.user_id " +
                         "FROM film_like t1 " +
@@ -242,7 +271,7 @@ public class FilmDbStorage implements FilmStorage {
                         "AND base.user_id = ? " +
                         "WHERE 1=1 " +
                         "AND base.film_id IS NULL";
-
+        }
         return jdbcTemplate.queryForList(sqlQuery,
                         Integer.class,
                         userId,

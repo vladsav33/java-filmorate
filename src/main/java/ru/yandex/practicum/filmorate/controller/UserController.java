@@ -4,11 +4,20 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exception.UserValidationException;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.enums.ActionType;
-import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.enums.EventType;
+import ru.yandex.practicum.filmorate.exception.UserValidationException;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.EventService;
@@ -91,9 +100,9 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/recommendations")
-    public List<Film> getFilmRecommendations(@PathVariable int userId) {
+    public List<Film> getFilmRecommendations(@PathVariable int userId, @RequestParam (defaultValue = "false") boolean byRating) {
         log.info("Получить список рекомендованных фильмов для пользователя с ID = {}", userId);
-        return userService.getFilmRecommendations(userId);
+        return userService.getFilmRecommendations(userId, byRating);
     }
 
     @DeleteMapping("/{userId}")
