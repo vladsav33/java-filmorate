@@ -8,7 +8,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.jdbc.SqlGroup;
-
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -125,6 +124,8 @@ public class FilmDbStorageTest {
     @Test
     public void testAddLike() {
         Film film = filmDbStorage.getById(3).orElse(null);
+        int rating = 6;
+
         assertNotNull(film);
 
         User user = User.builder()
@@ -135,12 +136,12 @@ public class FilmDbStorageTest {
                 .build();
         user.setId(1);
 
-        filmDbStorage.addLike(film, user);
+        filmDbStorage.addLike(film, user, rating);
         Film filmWithLike = filmDbStorage.getById(3).orElse(null);
         assertNotNull(filmWithLike);
 
         assertEquals(2, filmWithLike.getLikes().size());
-        assertTrue(filmWithLike.getLikes().contains(1));
+        assertTrue(filmWithLike.getLikes().get(1) != null);
     }
 
     @Test
@@ -161,7 +162,7 @@ public class FilmDbStorageTest {
         assertNotNull(filmWithoutLike);
 
         assertEquals(3, filmWithoutLike.getLikes().size());
-        assertFalse(filmWithoutLike.getLikes().contains(1));
+        assertFalse(filmWithoutLike.getLikes().get(1) != null);
     }
 
     @Test
@@ -179,28 +180,28 @@ public class FilmDbStorageTest {
 
     @Test
     void testgetPopularByGenreAndYear() {
-        Collection<Film> films = filmDbStorage.getPopularByGenreAndYear(10, 2, 2020);
+        Collection<Film> films = filmDbStorage.getPopularByGenreAndYear(10, 2, 2020, false);
         assertEquals(1, films.size());
         assertEquals(3, ((List<Film>)films).get(0).getId());
     }
 
     @Test
     void testgetPopularByGenre() {
-        Collection<Film> films = filmDbStorage.getPopularByGenreAndYear(10, 3, 0);
+        Collection<Film> films = filmDbStorage.getPopularByGenreAndYear(10, 3, 0, false);
         assertEquals(1, films.size());
         assertEquals(1, ((List<Film>)films).get(0).getId());
     }
 
     @Test
     void testgetPopularByYear() {
-        Collection<Film> films = filmDbStorage.getPopularByGenreAndYear(10, 0, 2021);
+        Collection<Film> films = filmDbStorage.getPopularByGenreAndYear(10, 0, 2021, false);
         assertEquals(1, films.size());
         assertEquals(2, ((List<Film>)films).get(0).getId());
     }
 
     @Test
     void testgetPopular() {
-        Collection<Film> films = filmDbStorage.getPopularByGenreAndYear(10, 0, 0);
+        Collection<Film> films = filmDbStorage.getPopularByGenreAndYear(10, 0, 0, false);
         assertEquals(3, films.size());
     }
 
@@ -223,7 +224,7 @@ public class FilmDbStorageTest {
     @Test
     public void testGetFilmRecommendations() {
         Film expectedFilm = filmDbStorage.getById(2).get();
-        Collection<Film> films = filmDbStorage.getFilmRecommendations(3);
+        Collection<Film> films = filmDbStorage.getFilmRecommendations(3, false);
         Film actualFilm = films.iterator().next();
 
         assertEquals(1, films.size());

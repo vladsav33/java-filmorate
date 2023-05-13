@@ -17,17 +17,17 @@ public interface FilmStorage {
 
     Optional<Film> update(Film film);
 
-    void addLike(Film film, User user);
+    void addLike(Film film, User user, int rating);
 
     void removeLike(Film film, User user);
 
     List<Film> getFilmsByDirector(int directorId);
 
-    List<Film> getPopularByGenreAndYear(int count, int genreId, int year);
+    List<Film> getPopularByGenreAndYear(int count, int genreId, int year, boolean byRating);
 
     void removeFilm(int filmId);
 
-    List<Film> getFilmRecommendations(int userId);
+    List<Film> getFilmRecommendations(int userId, boolean byRating);
 
     List<Film> getCommonFilms(int userId, int friendId);
 }

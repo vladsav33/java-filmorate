@@ -4,7 +4,8 @@ import org.springframework.core.convert.converter.Converter;
 
 public enum SortCategoryType {
     YEAR,
-    LIKES;
+    LIKES,
+    RATING;
 
     public static class StringToEnumConverter implements Converter<String, SortCategoryType> {
         @Override

@@ -15,10 +15,11 @@ import ru.yandex.practicum.filmorate.model.User;
 import java.time.LocalDate;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
-import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -61,26 +62,30 @@ class FilmServiceTest {
 
     @BeforeEach
     void setLikes() {
-        film.setLikes(new HashSet<>());
-        popularFilm.setLikes(Set.of(1, 2, 3));
+        film.setLikes(new HashMap<>());
+        popularFilm.setLikes(Map.of(1, 5, 2, 5, 3, 5));
     }
 
     @Test
     void addLikeWhenFilmIsNull() {
+        int rating = 6;
+
         when(filmStorage.getById(filmId)).thenReturn(Optional.empty());
         when(userStorage.getById(userId)).thenReturn(Optional.of(user));
 
-        FilmNotFoundException exception = assertThrows(FilmNotFoundException.class, () -> filmService.addLike(filmId, userId));
+        FilmNotFoundException exception = assertThrows(FilmNotFoundException.class, () -> filmService.addLike(filmId, userId, rating));
         verify(filmStorage).getById(filmId);
         assertEquals(exception.getMessage(), "Фильм с ID = " + filmId + " не найден.");
     }
 
     @Test
     void addLikeWhenUserIsNull() {
+        int rating = 6;
+
         when(filmStorage.getById(filmId)).thenReturn(Optional.of(film));
         when(userStorage.getById(userId)).thenReturn(Optional.empty());
 
-        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> filmService.addLike(filmId, userId));
+        UserNotFoundException exception = assertThrows(UserNotFoundException.class, () -> filmService.addLike(filmId, userId, rating));
         verify(filmStorage).getById(filmId);
         verify(userStorage).getById(userId);
         assertEquals(exception.getMessage(), "Пользователь с ID = " + userId + " не найден.");
@@ -88,14 +93,16 @@ class FilmServiceTest {
 
     @Test
     void addLike() {
+        int rating = 6;
+
         when(filmStorage.getById(filmId)).thenReturn(Optional.of(film));
         when(userStorage.getById(userId)).thenReturn(Optional.of(user));
 
-        filmService.addLike(filmId, userId);
+        filmService.addLike(filmId, userId, rating);
 
         verify(filmStorage).getById(filmId);
         verify(userStorage).getById(userId);
-        verify(filmStorage).addLike(film, user);
+        verify(filmStorage).addLike(film, user, rating);
     }
 
     @Test
@@ -133,7 +140,7 @@ class FilmServiceTest {
 
     @Test
     void removeLike() {
-        film.getLikes().add(userId);
+        film.getLikes().put(userId, 5);
         when(filmStorage.getById(filmId)).thenReturn(Optional.of(film));
         when(userStorage.getById(userId)).thenReturn(Optional.of(user));
 
@@ -146,22 +153,22 @@ class FilmServiceTest {
 
     @Test
     void getTop() {
-        when(filmStorage.getPopularByGenreAndYear(3, 0, 0)).thenReturn(List.of(film, popularFilm));
+        when(filmStorage.getPopularByGenreAndYear(3, 0, 0, false)).thenReturn(List.of(film, popularFilm));
 
-        Collection<Film> top = filmService.getTop(3, 0, 0);
+        Collection<Film> top = filmService.getTop(3, 0, 0, false);
 
-        verify(filmStorage).getPopularByGenreAndYear(3, 0, 0);
+        verify(filmStorage).getPopularByGenreAndYear(3, 0, 0, false);
         assertEquals(2, top.size());
         assertEquals(List.of(film, popularFilm), top);
     }
 
     @Test
     void getTopWithLimit() {
-        when(filmStorage.getPopularByGenreAndYear(2, 0, 0)).thenReturn(List.of(film, popularFilm));
+        when(filmStorage.getPopularByGenreAndYear(2, 0, 0, false)).thenReturn(List.of(film, popularFilm));
 
-        Collection<Film> top = filmService.getTop(2, 0, 0);
+        Collection<Film> top = filmService.getTop(2, 0, 0, false);
 
-        verify(filmStorage).getPopularByGenreAndYear(2, 0, 0);
+        verify(filmStorage).getPopularByGenreAndYear(2, 0, 0, false);
         assertEquals(2, top.size());
         assertEquals(List.of(film, popularFilm), top);
     }
@@ -251,7 +258,7 @@ class FilmServiceTest {
                 .duration(100)
                 .directors(new HashSet<>(Arrays.asList(
                         new Director(1, "Director1"))))
-                .likes(new HashSet<>(Arrays.asList(2)))
+                .likes(new HashMap<>(Map.of(2, 5)))
                 .build();
         Film film2 = Film.builder()
                 .name("name2")
@@ -260,7 +267,7 @@ class FilmServiceTest {
                 .duration(200)
                 .directors(new HashSet<>(Arrays.asList(
                         new Director(1, "Director1"))))
-                .likes(new HashSet<>(Arrays.asList(1, 2)))
+                .likes(new HashMap<>(Map.of(1, 5, 2, 5)))
                 .build();
 
         when(filmStorage.getFilmsByDirector(1)).thenReturn(List.of(film2, film1));
@@ -282,7 +289,7 @@ class FilmServiceTest {
                 .duration(100)
                 .directors(new HashSet<>(Arrays.asList(
                         new Director(1, "Director1"))))
-                .likes(new HashSet<>(Arrays.asList(2)))
+                .likes(new HashMap<>(Map.of(2, 5)))
                 .build();
         Film film2 = Film.builder()
                 .name("name2")
@@ -291,7 +298,7 @@ class FilmServiceTest {
                 .duration(200)
                 .directors(new HashSet<>(Arrays.asList(
                         new Director(1, "Director1"))))
-                .likes(new HashSet<>(Arrays.asList(1, 2)))
+                .likes(new HashMap<>(Map.of(1, 5, 2, 5)))
                 .build();
 
         when(filmStorage.getFilmsByDirector(1)).thenReturn(List.of(film1, film2));
@@ -306,11 +313,11 @@ class FilmServiceTest {
 
     @Test
     public void testPopularByGenreAndYear() {
-        when(filmStorage.getPopularByGenreAndYear(10, 0, 2010)).thenReturn(List.of(popularFilm));
+        when(filmStorage.getPopularByGenreAndYear(10, 0, 2010, false)).thenReturn(List.of(popularFilm));
 
-        Collection<Film> top = filmService.getTop(10, 0, 2010);
+        Collection<Film> top = filmService.getTop(10, 0, 2010, false);
 
-        verify(filmStorage).getPopularByGenreAndYear(10, 0, 2010);
+        verify(filmStorage).getPopularByGenreAndYear(10, 0, 2010, false);
         assertEquals(1, top.size());
         assertEquals(List.of(popularFilm), top);
     }
@@ -324,7 +331,7 @@ class FilmServiceTest {
                 .duration(100)
                 .directors(new HashSet<>(Arrays.asList(
                         new Director(1, "Director1"))))
-                .likes(new HashSet<>(Arrays.asList(2)))
+                .likes(new HashMap<>(Map.of(2, 5)))
                 .build();
 
         when(filmStorage.search("name1", false, true)).thenReturn(List.of(film1));

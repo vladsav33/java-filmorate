@@ -16,8 +16,8 @@ public class InMemoryFilmStorage extends BaseModelStorage<Film> implements FilmS
     }
 
     @Override
-    public void addLike(Film film, User user) {
-        film.getLikes().add(user.getId());
+    public void addLike(Film film, User user, int rating) {
+        film.getLikes().put(user.getId(), 0);
     }
 
     @Override
@@ -39,13 +39,13 @@ public class InMemoryFilmStorage extends BaseModelStorage<Film> implements FilmS
 
     @Override
     @Deprecated
-    public List<Film> getPopularByGenreAndYear(int count, int genreId, int year) {
+    public List<Film> getPopularByGenreAndYear(int count, int genreId, int year, boolean byRating) {
         throw new UnsupportedOperationException("Реализация метода существует только при работе с БД");
     }
 
     @Override
     @Deprecated
-    public List<Film> getFilmRecommendations(int userId) {
+    public List<Film> getFilmRecommendations(int userId, boolean byRating) {
         throw new UnsupportedOperationException("Реализация метода существует только при работе с БД");
     }
 
