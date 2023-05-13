@@ -235,7 +235,6 @@ public class FilmDbStorage implements FilmStorage {
                                 "GROUP BY t2.user_id " +
                                 "ORDER BY COUNT(t2.film_id) DESC " +
                                 "LIMIT 1) " +
-        
                                 "SELECT rec.film_id " +
                                 "FROM film_like rec " +
                                 "INNER JOIN rec_user ON rec.user_id = rec_user.user_id " +
@@ -243,7 +242,7 @@ public class FilmDbStorage implements FilmStorage {
                                 "AND base.user_id = ? " +
                                 "WHERE 1=1 " +
                                 "AND base.film_id IS NULL ");
-        if(byRating) {
+        if (byRating) {
             sqlQuery.append("AND rec.rating > 5");
         }
 
