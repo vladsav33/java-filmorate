@@ -62,7 +62,7 @@ public class FilmController {
                                  @RequestParam(defaultValue = "0") int genreId,
                                  @RequestParam(defaultValue = "0") int year,
                                  @RequestParam(defaultValue = "false") boolean byRating) {
-        log.info("Вывести ТОП {} фильмов, жанр: {}, год: {}", count, genreId, year);
+        log.info("Вывести ТОП {} фильмов, жанр: {}, год: {} и рейтинг {}", count, genreId, year, byRating);
 
         return filmService.getTop(count, genreId, year, byRating);
     }
@@ -72,7 +72,7 @@ public class FilmController {
         if (rating < 0 || rating > 10) {
             throw new RatingValidationException("Ошибка в рейтинге");
         }
-        log.info("Добавляем лайк фильму ID = {} от пользователя ID = {}", filmId, userId);
+        log.info("Добавляем лайк фильму ID = {} от пользователя ID = {} и рейтингом {}", filmId, userId, rating);
         filmService.addLike(filmId, userId, rating);
         eventService.createEvent(userId, ActionType.ADD, EventType.LIKE, filmId);
     }

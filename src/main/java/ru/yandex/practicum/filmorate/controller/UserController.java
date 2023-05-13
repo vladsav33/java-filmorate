@@ -101,7 +101,7 @@ public class UserController {
 
     @GetMapping("/{userId}/recommendations")
     public List<Film> getFilmRecommendations(@PathVariable int userId, @RequestParam (defaultValue = "false") boolean byRating) {
-        log.info("Получить список рекомендованных фильмов для пользователя с ID = {}", userId);
+        log.info("Получить список рекомендованных фильмов для пользователя с ID = {} и рейтингом {}", userId, byRating);
         return userService.getFilmRecommendations(userId, byRating);
     }
 
