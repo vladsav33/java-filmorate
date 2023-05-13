@@ -16,12 +16,6 @@ public class InMemoryFilmStorage extends BaseModelStorage<Film> implements FilmS
     }
 
     @Override
-    @Deprecated
-    public List<Film> search(String query, Boolean director, Boolean film) {
-        throw new UnsupportedOperationException("Реализация метода существует только при работе с БД");
-    }
-
-    @Override
     public void addLike(Film film, User user, int rating) {
         film.getLikes().put(user.getId(), 0);
     }
