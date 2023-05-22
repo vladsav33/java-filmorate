@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.dao.impl;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.dao.FilmStorage;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.FilmSearchCriteria;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
@@ -39,7 +40,7 @@ public class InMemoryFilmStorage extends BaseModelStorage<Film> implements FilmS
 
     @Override
     @Deprecated
-    public List<Film> getPopularByGenreAndYear(int count, int genreId, int year, boolean byRating) {
+    public List<Film> getPopularByGenreAndYear(FilmSearchCriteria filmSearchCriteria) {
         throw new UnsupportedOperationException("Реализация метода существует только при работе с БД");
     }
 

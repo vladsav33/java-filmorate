@@ -10,6 +10,7 @@ import javax.validation.constraints.Positive;
 import javax.validation.constraints.Size;
 import java.time.LocalDate;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 
 @Data
@@ -34,15 +35,10 @@ public class Film extends BaseModel {
     private Set<Genre> genres;
     private MPA mpa;
     private Set<Director> directors;
-    private double averageRating;
+    private Double averageRating;
 
-    public double setAverageRating() {
-        if (likes != null) {
-            averageRating = likes.values().stream().filter(value -> value != 0).mapToDouble(Integer::doubleValue).average().orElse(0);
-        } else {
-            averageRating = 0;
-        }
-        return averageRating;
+    public void calculateRating(Map<Integer, Integer> likes) {
+        Optional.ofNullable(likes).ifPresent(map -> setAverageRating(map.values().stream()
+                .filter(value -> value != 0).mapToDouble(Integer::doubleValue).average().orElse(0)));
     }
-
 }

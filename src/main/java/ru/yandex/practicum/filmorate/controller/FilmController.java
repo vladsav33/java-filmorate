@@ -21,6 +21,7 @@ import ru.yandex.practicum.filmorate.enums.SortCategoryType;
 import ru.yandex.practicum.filmorate.exception.FilmValidationException;
 import ru.yandex.practicum.filmorate.exception.RatingValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.FilmSearchCriteria;
 import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.ValidateService;
@@ -37,6 +38,7 @@ public class FilmController {
     private final FilmService filmService;
     private final ValidateService validateService;
     private final EventService eventService;
+//    private FilmSearchCriteria filmSearchCriteria = new FilmSearchCriteria(10, 0, 0, false);
 
     @GetMapping("/search")
     public List<Film> search(@RequestParam(name = "query", defaultValue = "") String query,
@@ -62,9 +64,12 @@ public class FilmController {
                                  @RequestParam(defaultValue = "0") int genreId,
                                  @RequestParam(defaultValue = "0") int year,
                                  @RequestParam(defaultValue = "false") boolean byRating) {
-        log.info("Вывести ТОП {} фильмов, жанр: {}, год: {} и рейтинг {}", count, genreId, year, byRating);
+        FilmSearchCriteria criteria = new FilmSearchCriteria(count, genreId, year, byRating);
+        log.info("Вывести ТОП {} фильмов, жанр: {}, год: {} и рейтинг {}",
+                criteria.getCount(), criteria.getGenreId(), criteria.getYear(), criteria.isByRating());
 
-        return filmService.getTop(count, genreId, year, byRating);
+
+        return filmService.getTop(criteria);
     }
 
     @PutMapping("/{filmId}/like/{userId}")

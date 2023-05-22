@@ -10,6 +10,7 @@ import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.jdbc.SqlGroup;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.FilmSearchCriteria;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.MPA;
 import ru.yandex.practicum.filmorate.model.User;
@@ -162,7 +163,7 @@ public class FilmDbStorageTest {
         assertNotNull(filmWithoutLike);
 
         assertEquals(3, filmWithoutLike.getLikes().size());
-        assertFalse(filmWithoutLike.getLikes().get(1) != null);
+        assertFalse(filmWithoutLike.getLikes().containsKey(1));
     }
 
     @Test
@@ -180,28 +181,36 @@ public class FilmDbStorageTest {
 
     @Test
     void testgetPopularByGenreAndYear() {
-        Collection<Film> films = filmDbStorage.getPopularByGenreAndYear(10, 2, 2020, false);
+        FilmSearchCriteria criteria = new FilmSearchCriteria(10, 2, 2020, false);
+
+        Collection<Film> films = filmDbStorage.getPopularByGenreAndYear(criteria);
         assertEquals(1, films.size());
         assertEquals(3, ((List<Film>)films).get(0).getId());
     }
 
     @Test
     void testgetPopularByGenre() {
-        Collection<Film> films = filmDbStorage.getPopularByGenreAndYear(10, 3, 0, false);
+        FilmSearchCriteria criteria = new FilmSearchCriteria(10, 3, 0, false);
+
+        Collection<Film> films = filmDbStorage.getPopularByGenreAndYear(criteria);
         assertEquals(1, films.size());
         assertEquals(1, ((List<Film>)films).get(0).getId());
     }
 
     @Test
     void testgetPopularByYear() {
-        Collection<Film> films = filmDbStorage.getPopularByGenreAndYear(10, 0, 2021, false);
+        FilmSearchCriteria criteria = new FilmSearchCriteria(10, 0, 2021, false);
+
+        Collection<Film> films = filmDbStorage.getPopularByGenreAndYear(criteria);
         assertEquals(1, films.size());
         assertEquals(2, ((List<Film>)films).get(0).getId());
     }
 
     @Test
     void testgetPopular() {
-        Collection<Film> films = filmDbStorage.getPopularByGenreAndYear(10, 0, 0, false);
+        FilmSearchCriteria criteria = new FilmSearchCriteria(10, 0, 0, false);
+
+        Collection<Film> films = filmDbStorage.getPopularByGenreAndYear(criteria);
         assertEquals(3, films.size());
     }
 

@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.FilmSearchCriteria;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -153,22 +154,25 @@ class FilmServiceTest {
 
     @Test
     void getTop() {
-        when(filmStorage.getPopularByGenreAndYear(3, 0, 0, false)).thenReturn(List.of(film, popularFilm));
+        FilmSearchCriteria criteria = new FilmSearchCriteria(3, 0, 0, false);
 
-        Collection<Film> top = filmService.getTop(3, 0, 0, false);
+        when(filmStorage.getPopularByGenreAndYear(criteria)).thenReturn(List.of(film, popularFilm));
 
-        verify(filmStorage).getPopularByGenreAndYear(3, 0, 0, false);
+        Collection<Film> top = filmService.getTop(criteria);
+
+        verify(filmStorage).getPopularByGenreAndYear(criteria);
         assertEquals(2, top.size());
         assertEquals(List.of(film, popularFilm), top);
     }
 
     @Test
     void getTopWithLimit() {
-        when(filmStorage.getPopularByGenreAndYear(2, 0, 0, false)).thenReturn(List.of(film, popularFilm));
+        FilmSearchCriteria criteria = new FilmSearchCriteria(2, 0, 0, false);
 
-        Collection<Film> top = filmService.getTop(2, 0, 0, false);
+        when(filmStorage.getPopularByGenreAndYear(criteria)).thenReturn(List.of(film, popularFilm));
+        Collection<Film> top = filmService.getTop(criteria);
 
-        verify(filmStorage).getPopularByGenreAndYear(2, 0, 0, false);
+        verify(filmStorage).getPopularByGenreAndYear(criteria);
         assertEquals(2, top.size());
         assertEquals(List.of(film, popularFilm), top);
     }
@@ -313,11 +317,13 @@ class FilmServiceTest {
 
     @Test
     public void testPopularByGenreAndYear() {
-        when(filmStorage.getPopularByGenreAndYear(10, 0, 2010, false)).thenReturn(List.of(popularFilm));
+        FilmSearchCriteria criteria = new FilmSearchCriteria(10, 0, 2010, false);
 
-        Collection<Film> top = filmService.getTop(10, 0, 2010, false);
+        when(filmStorage.getPopularByGenreAndYear(criteria)).thenReturn(List.of(popularFilm));
 
-        verify(filmStorage).getPopularByGenreAndYear(10, 0, 2010, false);
+        Collection<Film> top = filmService.getTop(criteria);
+
+        verify(filmStorage).getPopularByGenreAndYear(criteria);
         assertEquals(1, top.size());
         assertEquals(List.of(popularFilm), top);
     }

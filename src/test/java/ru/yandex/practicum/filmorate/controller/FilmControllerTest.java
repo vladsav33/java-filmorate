@@ -16,6 +16,7 @@ import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.FilmSearchCriteria;
 import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -136,12 +137,13 @@ class FilmControllerTest {
     @SneakyThrows
     public void testGetPopular() {
         int count = 5;
-        when(filmService.getTop(count, 0, 0, false)).thenReturn(Collections.emptyList());
+        FilmSearchCriteria criteria = new FilmSearchCriteria(count, 0, 0, false);
+        when(filmService.getTop(criteria)).thenReturn(Collections.emptyList());
 
         mockMvc.perform(MockMvcRequestBuilders.get("/films/popular?count=" + count))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
-        verify(filmService, times(1)).getTop(count, 0, 0, false);
+        verify(filmService, times(1)).getTop(criteria);
     }
 
     @Test
@@ -221,14 +223,15 @@ class FilmControllerTest {
         int genreId = 1;
         int year = 1999;
         boolean byRating = false;
+        FilmSearchCriteria criteria = new FilmSearchCriteria(count, genreId, year, byRating);
 
-        when(filmService.getTop(count, genreId, year, byRating)).thenReturn(Collections.emptyList());
+        when(filmService.getTop(criteria)).thenReturn(Collections.emptyList());
 
         mockMvc.perform(MockMvcRequestBuilders.get("/films/popular?count=" + count + "&genreId=" + genreId +
                         "&year=" + year + "&rating=" + byRating))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
-        verify(filmService, times(1)).getTop(count, genreId, year, byRating);
+        verify(filmService, times(1)).getTop(criteria);
     }
 
     @Test

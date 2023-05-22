@@ -12,11 +12,14 @@ import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.SortByValidationException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.FilmSearchCriteria;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -79,30 +82,22 @@ public class FilmService {
         log.debug("Удален лайк от пользователя ID = {} в фильме: {}", userId, film);
     }
 
-    public List<Film> getTop(int count, int genreId, int year, boolean byRating) {
-        log.info("Получаем список из {} популярных фильмов, жанр {}, год {}", count, genreId, year);
-        return filmStorage.getPopularByGenreAndYear(count, genreId, year, byRating);
+    public List<Film> getTop(FilmSearchCriteria criteria) {
+        log.info("Получаем список из {} популярных фильмов, жанр {}, год {}",
+                criteria.getCount(), criteria.getGenreId(), criteria.getYear());
+        return filmStorage.getPopularByGenreAndYear(criteria);
     }
 
     public List<Film> getFilmsByDirector(int directorId, SortCategoryType sortBy) {
         directorService.getIfDirectorExists(directorId);
         checkSortByParam(sortBy);
         List<Film> films = new ArrayList<>(filmStorage.getFilmsByDirector(directorId));
-        if (sortBy == SortCategoryType.LIKES) {
-            films.sort(this::compareByLikes);
-        } else if (sortBy == SortCategoryType.RATING) {
-            films.sort(this::compareByRating);
-        } else {
-            films.sort((film1, film2) -> {
-                        if (film1.getReleaseDate().isBefore(film2.getReleaseDate())) {
-                            return -1;
-                        } else if (film1.getReleaseDate().equals(film2.getReleaseDate())) {
-                            return 0;
-                        } else {
-                            return 1;
-                        }
-                    });
-        }
+
+        Map<SortCategoryType, Comparator<Film>> sortingMethodByType = new HashMap<>();
+        sortingMethodByType.put(SortCategoryType.LIKES, this::compareByLikes);
+        sortingMethodByType.put(SortCategoryType.RATING, this::compareByRating);
+        sortingMethodByType.put(SortCategoryType.YEAR, this::compareByYear);
+        films.sort(sortingMethodByType.get(sortBy));
 
         return films;
     }
@@ -128,12 +123,17 @@ public class FilmService {
     }
 
     private int compareByRating(Film f0, Film f1) {
-        if (f0.getAverageRating() - f1.getAverageRating() > 0) {
+        return Double.compare(f0.getAverageRating(), f1.getAverageRating());
+    }
+
+    private int compareByYear(Film f0, Film f1) {
+        if (f0.getReleaseDate().isBefore(f1.getReleaseDate())) {
             return -1;
-        } else if (f0.getAverageRating() - f1.getAverageRating() < 0) {
+        } else if (f0.getReleaseDate().equals(f1.getReleaseDate())) {
+            return 0;
+        } else {
             return 1;
         }
-        return 0;
     }
 
     private User checkUserId(int id) {

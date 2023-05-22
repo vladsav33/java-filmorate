@@ -13,6 +13,7 @@ import ru.yandex.practicum.filmorate.dao.GenreStorage;
 import ru.yandex.practicum.filmorate.dao.MPAStorage;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.FilmSearchCriteria;
 import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.model.User;
 
@@ -175,12 +176,12 @@ public class FilmDbStorage implements FilmStorage {
         return jdbcTemplate.query(queryFilmSelect, (rs, rowNum) -> makeFilm(rs), directorId);
     }
 
-    public List<Film> getPopularByGenreAndYear(int count, int genreId, int year, boolean byRating) {
+    public List<Film> getPopularByGenreAndYear(FilmSearchCriteria criteria) {
         List<Film> films;
         StringBuilder sqlQuery = new StringBuilder();
 
         sqlQuery.append("SELECT f.film_id, f.name, f.description, f.release_dt, f.duration, f.rating_id, ");
-        if (byRating) {
+        if (criteria.isByRating()) {
             sqlQuery.append("AVG(fl.rating) as likes ");
         } else {
             sqlQuery.append("COUNT(fl.user_id) as likes ");
@@ -191,17 +192,18 @@ public class FilmDbStorage implements FilmStorage {
                     "WHERE COALESCE (fg.genre_id, 0) = ?" +
                     "AND EXTRACT (year FROM COALESCE(f.release_dt, '1800-01-01')) = " +
                     "CASE WHEN ? = 0 THEN EXTRACT (year FROM COALESCE(f.release_dt, '1800-01-01')) ELSE ? END ");
-        if (byRating) {
+        if (criteria.isByRating()) {
             sqlQuery.append("AND fl.rating <> 0 ");
         }
         sqlQuery.append("GROUP BY f.film_id, f.name, f.description, f.release_dt, f.duration, f.rating_id " +
                     "ORDER BY likes DESC, film_id " +
                     "LIMIT ?");
 
-        films = jdbcTemplate.query(sqlQuery.toString(), (rs, rowNum) -> makeFilm(rs), genreId, genreId, year, year, count);
+        films = jdbcTemplate.query(sqlQuery.toString(), (rs, rowNum) -> makeFilm(rs),
+                criteria.getGenreId(), criteria.getGenreId(), criteria.getYear(), criteria.getYear(), criteria.getCount());
 
         if (films.isEmpty()) {
-            log.info("Популярные фильмы с жанром {} и годом {} не найдены.", genreId, year);
+            log.info("Популярные фильмы с жанром {} и годом {} не найдены.", criteria.getGenreId(), criteria.getYear());
         }
         return films;
     }
@@ -287,11 +289,11 @@ public class FilmDbStorage implements FilmStorage {
                 .duration(rs.getInt("duration"))
                 .mpa(mpaStorage.getById(rs.getInt("rating_id")).orElse(null))
                 .genres(getGenresByFilmId(filmId))
-                .likes(getLikesByFilmId(filmId))
+                .likes(getRatingByFilmId(filmId))
                 .directors(getDirectorsByFilmId(filmId))
                 .build();
         film.setId(filmId);
-        film.setAverageRating();
+        film.calculateRating(getRatingByFilmId(filmId));
         return film;
     }
 
@@ -309,7 +311,7 @@ public class FilmDbStorage implements FilmStorage {
                 .collect(Collectors.toSet());
     }
 
-    private Map<Integer, Integer> getLikesByFilmId(int filmId) {
+    private Map<Integer, Integer> getRatingByFilmId(int filmId) {
         String sqlQuery =
                 "SELECT user_id, rating " +
                         "FROM film_like " +
