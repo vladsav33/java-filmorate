@@ -19,7 +19,9 @@ import ru.yandex.practicum.filmorate.enums.EventType;
 import ru.yandex.practicum.filmorate.enums.SearchCategoryType;
 import ru.yandex.practicum.filmorate.enums.SortCategoryType;
 import ru.yandex.practicum.filmorate.exception.FilmValidationException;
+import ru.yandex.practicum.filmorate.exception.RatingValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.FilmSearchCriteria;
 import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.ValidateService;
@@ -36,6 +38,7 @@ public class FilmController {
     private final FilmService filmService;
     private final ValidateService validateService;
     private final EventService eventService;
+//    private FilmSearchCriteria filmSearchCriteria = new FilmSearchCriteria(10, 0, 0, false);
 
     @GetMapping("/search")
     public List<Film> search(@RequestParam(name = "query", defaultValue = "") String query,
@@ -59,16 +62,23 @@ public class FilmController {
     @GetMapping("/popular")
     public List<Film> getPopular(@RequestParam(defaultValue = "10") int count,
                                  @RequestParam(defaultValue = "0") int genreId,
-                                 @RequestParam(defaultValue = "0") int year) {
-        log.info("Вывести ТОП {} фильмов, жанр: {}, год: {}", count, genreId, year);
+                                 @RequestParam(defaultValue = "0") int year,
+                                 @RequestParam(defaultValue = "false") boolean byRating) {
+        FilmSearchCriteria criteria = new FilmSearchCriteria(count, genreId, year, byRating);
+        log.info("Вывести ТОП {} фильмов, жанр: {}, год: {} и рейтинг {}",
+                criteria.getCount(), criteria.getGenreId(), criteria.getYear(), criteria.isByRating());
 
-        return filmService.getTop(count, genreId, year);
+
+        return filmService.getTop(criteria);
     }
 
     @PutMapping("/{filmId}/like/{userId}")
-    public void addLike(@PathVariable int filmId, @PathVariable int userId) {
-        log.info("Добавляем лайк фильму ID = {} от пользователя ID = {}", filmId, userId);
-        filmService.addLike(filmId, userId);
+    public void addLike(@PathVariable int filmId, @PathVariable int userId, @RequestParam(defaultValue = "0") int rating) {
+        if (rating < 0 || rating > 10) {
+            throw new RatingValidationException("Ошибка в рейтинге");
+        }
+        log.info("Добавляем лайк фильму ID = {} от пользователя ID = {} и рейтингом {}", filmId, userId, rating);
+        filmService.addLike(filmId, userId, rating);
         eventService.createEvent(userId, ActionType.ADD, EventType.LIKE, filmId);
     }
 

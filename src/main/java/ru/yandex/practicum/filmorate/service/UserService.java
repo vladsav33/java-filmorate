@@ -12,7 +12,10 @@ import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.util.*;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -97,10 +100,10 @@ public class UserService {
         log.debug("Удален пользователь {}", user);
     }
 
-    public List<Film> getFilmRecommendations(int userId) {
+    public List<Film> getFilmRecommendations(int userId, boolean byRating) {
         checkUserId(userId);
         try {
-            return filmStorage.getFilmRecommendations(userId);
+            return filmStorage.getFilmRecommendations(userId, byRating);
         } catch (EmptyResultDataAccessException e) {
             log.info("Рекомедации по фильмам для пользователя с ID = {} отсутствуют", userId);
             return Collections.emptyList();

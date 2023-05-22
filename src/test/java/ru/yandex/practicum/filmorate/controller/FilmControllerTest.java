@@ -9,10 +9,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-
-import ru.yandex.practicum.filmorate.enums.SortCategoryType;
-import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
-import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.enums.ActionType;
 import ru.yandex.practicum.filmorate.enums.EventType;
 import ru.yandex.practicum.filmorate.enums.SortCategoryType;
@@ -20,6 +16,7 @@ import ru.yandex.practicum.filmorate.exception.FilmNotFoundException;
 import ru.yandex.practicum.filmorate.exception.UserNotFoundException;
 import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.model.FilmSearchCriteria;
 import ru.yandex.practicum.filmorate.service.EventService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -140,12 +137,13 @@ class FilmControllerTest {
     @SneakyThrows
     public void testGetPopular() {
         int count = 5;
-        when(filmService.getTop(count, 0, 0)).thenReturn(Collections.emptyList());
+        FilmSearchCriteria criteria = new FilmSearchCriteria(count, 0, 0, false);
+        when(filmService.getTop(criteria)).thenReturn(Collections.emptyList());
 
         mockMvc.perform(MockMvcRequestBuilders.get("/films/popular?count=" + count))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
-        verify(filmService, times(1)).getTop(count, 0, 0);
+        verify(filmService, times(1)).getTop(criteria);
     }
 
     @Test
@@ -153,10 +151,11 @@ class FilmControllerTest {
     public void testAddLike() {
         int filmId = 1;
         int userId = 2;
+        int rating = 6;
 
-        mockMvc.perform(MockMvcRequestBuilders.put("/films/" + filmId + "/like/" + userId))
+        mockMvc.perform(MockMvcRequestBuilders.put("/films/" + filmId + "/like/" + userId + "?rating=" + rating))
                 .andExpect(status().isOk());
-        verify(filmService, times(1)).addLike(filmId, userId);
+        verify(filmService, times(1)).addLike(filmId, userId, rating);
         verify(eventService, times(1)).createEvent(userId, ActionType.ADD, EventType.LIKE, filmId);
     }
 
@@ -223,13 +222,16 @@ class FilmControllerTest {
         int count = 5;
         int genreId = 1;
         int year = 1999;
-        when(filmService.getTop(count, genreId, year)).thenReturn(Collections.emptyList());
+        boolean byRating = false;
+        FilmSearchCriteria criteria = new FilmSearchCriteria(count, genreId, year, byRating);
+
+        when(filmService.getTop(criteria)).thenReturn(Collections.emptyList());
 
         mockMvc.perform(MockMvcRequestBuilders.get("/films/popular?count=" + count + "&genreId=" + genreId +
-                        "&year=" + year))
+                        "&year=" + year + "&rating=" + byRating))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$").isArray());
-        verify(filmService, times(1)).getTop(count, genreId, year);
+        verify(filmService, times(1)).getTop(criteria);
     }
 
     @Test
