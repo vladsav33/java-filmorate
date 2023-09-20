@@ -16,5 +16,5 @@ Cервис для работы с фильмами и оценками поль
 
 ## Развертывание
 
- - mvn -Dmaven.test.skip=true clean package
- 
+ - mvn clean package
+ - java -jar target\filmorate-0.0.1-SNAPSHOT.jar
